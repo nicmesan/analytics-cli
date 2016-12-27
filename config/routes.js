@@ -10,7 +10,7 @@ const home = require('../app/controllers/home');
  * Expose
  */
 
-module.exports = function (app, passport) {
+module.exports = function (app) {
 
   app.get('/', home.index);
 
