@@ -4,5 +4,5 @@
  */
 
 exports.index = function (req, res) {
- res.status(200).send();
+ res.status(403).send("HIJO DE REMIL PUTA");
 };

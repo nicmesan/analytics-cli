@@ -15,7 +15,6 @@ require('dotenv').config();
 const fs = require('fs');
 const join = require('path').join;
 const express = require('express');
-const mongoose = require('mongoose');
 const config = require('./config');
 
 const models = join(__dirname, 'app/models');
@@ -42,10 +41,6 @@ fs.readdirSync(models)
 require('./config/express')(app);
 require('./config/routes')(app);
 
-connection
-  .on('error', console.log)
-  .on('disconnected', connect)
-  .once('open', listen);
 
 function listen () {
   if (app.get('env') === 'test') return;
@@ -54,7 +49,4 @@ function listen () {
 }
 
 function connect () {
-  var options = { server: { socketOptions: { keepAlive: 1 } } };
-  var connection = mongoose.connect(config.db, options).connection;
-  return connection;
 }
