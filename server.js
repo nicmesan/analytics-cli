@@ -13,16 +13,6 @@ const port = process.env.PORT || 3000;
 const app = express();
 const connection = connect();
 
-/**
- * Expose
- */
-
-module.exports = {
-  app,
-  connection
-};
-
-
 // Bootstrap models
 fs.readdirSync(models)
   .filter(file => ~file.indexOf('.js'))
