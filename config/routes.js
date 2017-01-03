@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const home = require('../app/controllers/home');
+const pages = require('../app/controllers/page');
 
 /**
  * Expose
@@ -12,7 +12,8 @@ const home = require('../app/controllers/home');
 
 module.exports = function (app) {
 
-  app.get('/', home.index);
+  app.get('/pages', pages.list);
+  app.post('/pages', pages.create);
 
   /**
    * Error handling
