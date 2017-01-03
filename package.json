@@ -11,6 +11,7 @@
     "test": "./node_modules/.bin/cross-env NODE_ENV=test ./node_modules/.bin/babel-tape-runner test/test-*.js"
   },
   "dependencies": {
+    "body-parser": "^1.15.2",
     "bookshelf": "^0.10.2",
     "db-migrate": "^0.10.0-beta.20",
     "db-migrate-mysql": "^1.1.10",

@@ -9,13 +9,14 @@ exports.list = function (req, res, err) {
     }).then(function(collection) {
         res.send(collection.toJSON());
     });
-
 };
 
 exports.create = function (req, res, err) {
-    var page1 = new Page({name:"pimpollo"});
+    var page1 = new Page({url: req.body.url });
     page1.save(null, {method: "insert"}).then(function(pg){
         res.send(pg)
     });
 };
+
+
 
