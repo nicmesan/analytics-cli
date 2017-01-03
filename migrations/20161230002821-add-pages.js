@@ -16,8 +16,8 @@ exports.setup = function(options, seedLink) {
 
 exports.up = function(db) {
   return  db.createTable('pages', {
-      id: { type: 'int', primaryKey: true, autoIncrement: true },
-      url: 'string'
+      id:  { type: 'int', primaryKey: true, autoIncrement: true },
+      url: { type: 'string', unique: true },
   });
 };
 

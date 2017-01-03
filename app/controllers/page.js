@@ -12,8 +12,9 @@ exports.list = function (req, res, err) {
 };
 
 exports.create = function (req, res, err) {
-    var page1 = new Page({url: req.body.url });
-    page1.save(null, {method: "insert"}).then(function(pg){
+    new Page({url: req.body.url })
+        .save(null, {method: "insert"})
+        .then(function(pg){
         res.send(pg)
     });
 };
