@@ -1,5 +1,6 @@
 var Page = require('../models/page');
 var Pages = require('../collections/pages').collection;
+var PageOps = require('../services/page-ops');
 /*!
  * Module dependencies.
  */
@@ -15,9 +16,17 @@ exports.create = function (req, res, err) {
     new Page({url: req.body.url })
         .save(null, {method: "insert"})
         .then(function(pg){
-        res.send(pg)
+        res.send(pg);
     });
 };
 
+exports.operate = function(req,res,err) {
+    var pageOps = new PageOps({
+        client: "Garbarino",
+        pagesGroupTake: 5
+    });
 
-
+    pageOps.populateUrls().then(function(result) {
+        res.send(result)
+    });
+}
