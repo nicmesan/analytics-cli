@@ -16,5 +16,8 @@ db:
     MYSQL_DATABASE: tarantula
     MYSQL_USER: tarantula
     MYSQL_PASSWORD: tarantula
+  ports:
+    - "3306:3306"
   volumes:
     - ./:/app/
+
