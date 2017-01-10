@@ -2,10 +2,10 @@
   "defaultEnv": "local",
   "local": {
     "driver": "mysql",
-    "host": "127.0.0.1",
-    "user": "javieranselmi",
-    "password": "zapata12",
+    "host": "db",
+    "user": "tarantula",
+    "password": "tarantula",
     "multipleStatements": true,
-    "database": "analytics"
+    "database": "tarantula"
   }
 }

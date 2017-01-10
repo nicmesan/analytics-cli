@@ -1,6 +1,7 @@
 var Page = require('../models/page');
 var Pages = require('../collections/pages').collection;
 var PageOps = require('../services/page-ops');
+var analytics = require('../services/analytics');
 /*!
  * Module dependencies.
  */
@@ -30,3 +31,9 @@ exports.operate = function(req,res,err) {
         res.send(result)
     });
 }
+
+exports.getPages = function(req,res,err) {
+    var data = req.body;
+
+
+};
