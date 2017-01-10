@@ -4,7 +4,7 @@ var dbConfig = {
     host     : 'db',
     user     : 'tarantula',
     password : 'tarantula',
-    database : 'analytics-cli'
+    database : 'tarantula'
   }
 };
 var knex = require('knex')(dbConfig);
