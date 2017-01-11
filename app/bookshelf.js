@@ -1,11 +1,2 @@
-var dbConfig = {
-  client: 'mysql',
-  connection: {
-    host     : 'db',
-    user     : 'tarantula',
-    password : 'tarantula',
-    database : 'tarantula'
-  }
-};
-var knex = require('knex')(dbConfig);
+var knex = require('../config/knex')
 module.exports = require('bookshelf')(knex);
