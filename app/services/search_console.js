@@ -5,7 +5,7 @@ var timeUtils = require('../utils/time_formatter');
 
 function searchConsoleFetch(accessToken, domain, rows, options ) {
 
-    auth.oauth2Client.setCredentials(accessToken);
+    auth.setExistingCredentials();
 
     rows = rows || 'all';
     options = options || {};
