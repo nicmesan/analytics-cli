@@ -17,6 +17,7 @@ exports.setup = function(options, seedLink) {
 exports.up = function(db) {
     return  db.createTable('tokens', {
         id:  { type: 'int', primaryKey: true, autoIncrement: true },
+        name: {type: 'string'},
         token: {type: 'string'},
         description: { type: 'string'}
     });
