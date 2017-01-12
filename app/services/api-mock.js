@@ -15,6 +15,10 @@ module.exports = {
         return 3
     },
 
+    getKeywordGroupsCount: function() {
+        return 15
+    },
+
     getPageGroup: function(page, take) {
         var pageGroup = [];
         var start = page * take;
