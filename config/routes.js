@@ -12,8 +12,6 @@ const pages = require('../app/controllers/page');
 
 module.exports = function (app) {
 
-  app.get('/pages', pages.list);
-  app.post('/pages', pages.create);
   app.get('/operate', pages.operate)
 
   /**
