@@ -15,15 +15,26 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-    return  db.createTable('kets', {
+    return  db.createTable('ksets', {
         id:  { type: 'int', primaryKey: true, autoIncrement: true },
-        pageId: { type: 'int'}, //TODO find out how to add constraint to pages table
+        pageId: { type: 'int'},
         content: {type: 'string'}
+    }).then(function() {
+        db.addForeignKey(
+            'ksets',
+            'pages',
+            'FK_ksets_pages',
+            {'pageId': 'id'},
+            {
+                onDelete: 'CASCADE', //Si borro una page, se borran sus ksets.
+                onUpdate: 'RESTRICT' //Si intento updatear el ID de una page con ksets, hay error.
+            });
+
     });
 };
 
 exports.down = function(db) {
-    return db.dropTable('kets');
+    return db.dropTable('ksets');
 };
 
 exports._meta = {
