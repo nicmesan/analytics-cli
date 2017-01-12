@@ -27,7 +27,7 @@ exports.operate = function(req,res,err) {
         pagesGroupTake: 5
     });
 
-    pageOps.populateUrls().then(function(result) {
+    pageOps.savePagesByGroups().then(function(result) {
         res.send(result)
     });
 }
