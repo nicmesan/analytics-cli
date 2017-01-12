@@ -2,11 +2,12 @@
 
 var apiMock = require('./api-mock');
 var Page = require('../models/page');
+var Kset = require('../models/kset');
 
 function PageOps(options){
     this.client = options.client;
     this.pagesGroupTake = options.pagesGroupTake;
-    this.ksetGroupTake = options.ksetGroupTake;
+    this.ksetsGroupTake = options.ksetsGroupTake;
 }
 
 function savePagePromise(page) {
@@ -16,8 +17,11 @@ function savePagePromise(page) {
     }).save(null, {method: "insert"});
 }
 
-function saveKsetPromise(kset) {
-
+function saveKsetPromise(kset, page) {
+    return new Kset({
+        content: kset.content,
+        pageId: page.id
+    }).save(null, {method: "insert"});
 }
 
 
@@ -37,19 +41,20 @@ PageOps.prototype.savePagesByGroups = function() {
     });
 };
 
-PageOps.prototype.saveKsetByGroups = function(page) {
+PageOps.prototype.saveKsetsByGroups = function(page) {
 
     var numberOfKsetGroups = apiMock.getKsetGroupsCount(page.url);
     var ksetCreationPromises = [];
 
     for (var i=0; i<numberOfKsetGroups; i++) {
-        var pagesGroup = apiMock.getPageGroup(i, this.ksetGroupTake);
+        var pagesGroup = apiMock.getKsetGroup(i, this.ksetsGroupTake, page);
+        console.log(apiMock.getKsetGroup(i, this.ksetsGroupTake, page))
         pagesGroup.forEach(function(kset) {
-            ksetCreationPromises.push(saveKsetPromise(kset));
+            ksetCreationPromises.push(saveKsetPromise(kset, page));
         });
     }
-    return Promise.all(ksetCreationPromises).then(function(pages){
-        return pages;
+    return Promise.all(ksetCreationPromises).then(function(ksets){
+        return ksets;
     });
 };
 

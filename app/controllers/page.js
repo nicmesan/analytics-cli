@@ -1,3 +1,5 @@
+"use strict";
+
 var Page = require('../models/page');
 var Pages = require('../collections/pages').collection;
 var PageOps = require('../services/page-ops');
@@ -6,34 +8,28 @@ var analytics = require('../services/analytics');
  * Module dependencies.
  */
 
-exports.list = function (req, res, err) {
-    new Pages().fetch({
-    }).then(function(collection) {
-        res.send(collection.toJSON());
-    });
-};
-
-exports.create = function (req, res, err) {
-    new Page({url: req.body.url })
-        .save(null, {method: "insert"})
-        .then(function(pg){
-        res.send(pg);
-    });
-};
-
 exports.operate = function(req,res,err) {
+
     var pageOps = new PageOps({
         client: "Garbarino",
-        pagesGroupTake: 5
+        pagesGroupTake: 10,
+        ksetsGroupTake: 10
     });
+    var response = '';
+    var ksetForPagesPromisesList = [];
 
-    pageOps.savePagesByGroups().then(function(result) {
-        res.send(result)
+    pageOps.savePagesByGroups().then(function(pages) {
+        response += 'PAGES: \n' + JSON.stringify(pages) + '\n';
+        pages.forEach(function(page) {
+            ksetForPagesPromisesList.push(function() {
+                return pageOps.saveKsetsByGroups(page).then(function(ksetList) {
+                    response+= 'KSETS for PAGE with ID ' + page.id + ':\n' +  JSON.stringify(ksetList) + '\n';
+                })
+            }());
+        })
+        return Promise.all(ksetForPagesPromisesList).then(function() {
+            res.send(response);
+        });
     });
 }
 
-exports.getPages = function(req,res,err) {
-    var data = req.body;
-
-
-};
