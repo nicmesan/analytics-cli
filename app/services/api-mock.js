@@ -1,4 +1,5 @@
 var UUID = require('simply-uuid');
+var randomWords = require('random-words')
 
 //Private
 function generateRandomPage() {
@@ -7,23 +8,41 @@ function generateRandomPage() {
         value: (Math.round(Math.random() * 10))
     }
 };
+function generateRandomKset() {
+    return {
+        content: randomWords({
+                    min: 2,
+                    max: 5,
+                    join: ' '
+                 })
+    }
+}
 
 //Public
 module.exports = {
 
     getPageGroupsCount: function() {
+        return 2
+    },
+
+    getKsetGroupsCount: function() {
         return 3
     },
 
-    getKeywordGroupsCount: function() {
-        return 15
-    },
-
-    getPageGroup: function(page, take) {
+    getPageGroup: function(resultsPage, take) {
         var pageGroup = [];
-        var start = page * take;
+        var start = resultsPage * take;
         for (var i=start; i<start+take; i++) {
             pageGroup.push(generateRandomPage());
+        }
+        return pageGroup;
+    },
+
+    getKsetGroup: function(resultsPage, take, page) {
+        var pageGroup = [];
+        var start = resultsPage * take;
+        for (var i=start; i<start+take; i++) {
+            pageGroup.push(generateRandomKset());
         }
         return pageGroup;
     }

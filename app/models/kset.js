@@ -1,8 +1,11 @@
 var bookshelf = require('../bookshelf');
 
-var Page = bookshelf.Model.extend({
+var Kset = bookshelf.Model.extend({
     tableName: 'ksets',
     pages: function() {
         return this.belongsTo(Page);
     }
 });
+
+
+module.exports = Kset;
