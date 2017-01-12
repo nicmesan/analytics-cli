@@ -8,11 +8,9 @@ function PageOps(options){
     this.pagesGroupTake = options.pagesGroupTake;
 }
 
-PageOps.prototype.populateUrls = function() {
-
+PageOps.prototype.partiallyPopulateUrls = function() {
     var numberOfPageGroups = apiMock.getPageGroupsCount();
     var pageCreationPromises = [];
-
     for (var i=0; i<numberOfPageGroups; i++) {
         var pagesGroup = apiMock.getPageGroup(i, this.pagesGroupTake);
         pagesGroup.forEach(function(page) {
@@ -28,7 +26,6 @@ PageOps.prototype.populateUrls = function() {
     return Promise.all(pageCreationPromises).then(function(pages){
         return pages;
     });
-
 };
 /*
 PageOps.prototype.getTopKeywordsForUrl = function(url) {

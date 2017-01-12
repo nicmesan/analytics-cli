@@ -1,8 +1,11 @@
+//Dependencies
+
 var google = require('googleapis');
 var webmasters = google.webmasters('v3');
 var auth = require('./oauth');
 var timeUtils = require('../utils/time_formatter');
 
+//Methods
 function searchConsoleFetch(accessToken, domain, rows, options ) {
 
 
@@ -16,7 +19,7 @@ function searchConsoleFetch(accessToken, domain, rows, options ) {
     var result = [];
     var rowBatch = rows >= 5000 || rows === 'all' ? 5000 : rows;
     var requestsNumber = Math.floor(rows/rowBatch) - 1 ;
-    var lastRequestBatch = rows%rowBatch;
+    var lastRequestBatch = rows % rowBatch;
 
     function fetchData () {
         webmasters.searchanalytics.query(
