@@ -23,7 +23,6 @@ function getRefreshToken() {
 function setExistingCredentials() {
     return getAccessToken().then((accessToken) => {
         return getRefreshToken().then((refreshToken) => {
-            console.log("Setting credentials to", accessToken, "and", refreshToken);
             oauth2Client.setCredentials({
                 access_token: accessToken,
                 refresh_token: refreshToken

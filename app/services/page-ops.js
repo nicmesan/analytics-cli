@@ -48,7 +48,6 @@ PageOps.prototype.saveKsetsByGroups = function(page) {
 
     for (var i=0; i<numberOfKsetGroups; i++) {
         var pagesGroup = apiMock.getKsetGroup(i, this.ksetsGroupTake, page);
-        console.log(apiMock.getKsetGroup(i, this.ksetsGroupTake, page))
         pagesGroup.forEach(function(kset) {
             ksetCreationPromises.push(saveKsetPromise(kset, page));
         });

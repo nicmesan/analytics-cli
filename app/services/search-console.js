@@ -6,22 +6,28 @@ var auth = require('./oauth');
 var timeUtils = require('../utils/time_formatter');
 
 //Methods
-function searchConsoleFetch(accessToken, domain, rows, options ) {
+
+function getFilter(dimension, operator,  expression) {
+    return {
+        dimension: dimension,
+        expression: operator,
+        operator: expression
+    }
+};
+
+function getKsetGroup(start, take, page) {
+    var config = {
+        startRow: start,
+        dimensions: 'query',
+        filters: [ getFilter('page', 'equals', page.url) ]
+    };
+    fetchWithDefaults(page.url, take, config)
+
+};
 
 
-    rows = rows || 'all';
-    options = options || {};
-    options.dimensions = options.dimensions || ['page'];
-    options.startDate = options.startDate || timeUtils.getPastXDays(90).startDate;
-    options.endDate = options.endDate || timeUtils.getPastXDays(90).endDate;
-    options.startRow = options.startRow || 0;
-
-    var result = [];
-    var rowBatch = rows >= 5000 || rows === 'all' ? 5000 : rows;
-    var requestsNumber = Math.floor(rows/rowBatch) - 1 ;
-    var lastRequestBatch = rows % rowBatch;
-
-    function fetchData () {
+function fetch(domain, options) {
+    return new Promise(function(resolve, reject) {
         webmasters.searchanalytics.query(
             {
                 'access_token': auth.oauth2Client,
@@ -33,53 +39,44 @@ function searchConsoleFetch(accessToken, domain, rows, options ) {
                     'dimensions': options.dimensions,
                     'filters': options.filters,
                     'startRow': options.startRow,
-                    'rowLimit': rowBatch
+                    'rowLimit': 5000,
                 }
-            }, function(err, resp) {
-                if (err) { console.log(err) }
-
-                else if (resp.rows.length === 0) {
-                    console.log('result length', result.length);
-                    return result;
+            }, function (err, resp) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(resp)
                 }
+            });
+    });
+}
 
-                else if (rows === 'all') {
-                    result = result.concat(resp.rows);
-                    options.startRow += 5000;
-                    fetchData();
-                }
 
-                else if (requestsNumber === 0) {
-                    if (lastRequestBatch === 0) {
-                        result = result.concat(resp.rows);
-                        console.log('result length', result.length);
-                        return result;
-                    }
+function fetchWithDefaults(domain, rows, options) {
 
-                    else {
-                        result = result.concat(resp.rows);
-                        rowBatch = lastRequestBatch;
-                        lastRequestBatch = 0;
-                        fetchData();
-                    }
-                }
+    auth.setExistingCredentials();
+    //auth.oauth2Client.
+    rows = rows || 'all';
+    options = options || {};
+    options.filters = options.filters || [];
+    options.dimensions = options.dimensions || ['page'];
+    options.startDate = options.startDate || timeUtils.getPastXDays(90).startDate;
+    options.endDate = options.endDate || timeUtils.getPastXDays(90).endDate;
+    options.startRow = options.startRow || 0;
 
-                else {
-                    requestsNumber -= 1;
-                    result = result.concat(resp.rows);
-                    options.startRow += rowBatch;
-                    fetchData();
-                }
-
-            }
-        )
-    }
+    var result = [];
+    var rowBatch = rows >= 5000 || rows === 'all' ? 5000 : rows;
+    var requestsNumber = Math.floor(rows/rowBatch) - 1 ;
+    var lastRequestBatch = rows % rowBatch;
 
     auth.setExistingCredentials().then(()=> {
-        fetchData();
+        fetch(domain, options).then(function(response) {
+            console.log("ANDUVO JOYA!", response);
+        })
     })
 
 }
 
+fetchWithDefaults('vivisaludable.com', 'all', null);
 
-exports.searchConsoleFetch = searchConsoleFetch;
+exports.fetch = fetchWithDefaults;

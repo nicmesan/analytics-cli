@@ -8,6 +8,6 @@ var dbConfig = {
         user     : 'tarantula',
         password : 'tarantula',
         database : 'tarantula'
-    }
+    } //TODO ADD to .env
 };
 module.exports = require('knex')(dbConfig);

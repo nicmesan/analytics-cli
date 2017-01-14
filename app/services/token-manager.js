@@ -9,6 +9,9 @@ function getToken(tokenKey) {
     })
 }
 
+//TODO: implement setToken function
+//TODO: relate token to a user/site
+
 var tokenManager = {
     getToken: getToken
 }
