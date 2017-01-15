@@ -12,17 +12,17 @@ var url = oauth2Client.generateAuthUrl({
     scope: ['https://www.googleapis.com/auth/analytics', 'https://www.googleapis.com/auth/webmasters.readonly']
 });
 
-function getAccessToken() {
-    return tokenManager.getToken('googleApiAccessToken');
+function getAccessToken(clientId) {
+    return tokenManager.getToken('googleApiAccessToken', clientId);
 }
 
-function getRefreshToken() {
-    return tokenManager.getToken('googleApiRefreshToken');
+function getRefreshToken(clientId) {
+    return tokenManager.getToken('googleApiRefreshToken', clientId);
 }
 
-function setExistingCredentials() {
-    return getAccessToken().then((accessToken) => {
-        return getRefreshToken().then((refreshToken) => {
+function setExistingCredentials(clientId) {
+    return getAccessToken(clientId).then(function(accessToken)  {
+        return getRefreshToken(clientId).then(function (refreshToken) {
             oauth2Client.setCredentials({
                 access_token: accessToken,
                 refresh_token: refreshToken

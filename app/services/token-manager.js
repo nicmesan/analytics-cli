@@ -3,9 +3,9 @@
  */
 var knex = require('../../config/knex');
 
-function getToken(tokenKey) {
-    return knex.select('token').from('tokens').where('name','=',tokenKey).then(function(res) {
-        return res[0].token;
+function getToken(tokenKey, clientId) {
+    return knex.select(tokenKey).from('tokens').where('id','=', clientId).then(function(res) {
+        return res[0][tokenKey];
     })
 }
 

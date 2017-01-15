@@ -1,5 +1,7 @@
 'use strict';
 
+var PageOps = require('../app/services/page-ops');
+
 /**
  * Module dependencies.
  */
@@ -12,7 +14,11 @@ const pages = require('../app/controllers/page');
 
 module.exports = function (app) {
 
-  app.get('/operate', pages.operate)
+  app.post('/saveKeywords/:clientId', function(req, resp) {
+    var data = req.body;
+    var clientId = req.params.clientId;
+    PageOps.prototype.saveKsetsByPage(data.page, clientId)
+  });
 
   /**
    * Error handling

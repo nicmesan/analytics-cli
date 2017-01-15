@@ -8,7 +8,9 @@ RUN apt-get install -y nodejs
 COPY . /app/analytics-cli
 
 WORKDIR /app/analytics-cli
-RUN npm install -g db-migrate 
+RUN npm install -g db-migrate
+RUN npm install -g nodemon
+RUN npm install cross-env
 RUN npm install
 
 CMD ["node", "server"]

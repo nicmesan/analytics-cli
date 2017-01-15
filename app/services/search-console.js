@@ -3,27 +3,35 @@
 var google = require('googleapis');
 var webmasters = google.webmasters('v3');
 var auth = require('./oauth');
+var knex = require('../../config/knex');
 var timeUtils = require('../utils/time_formatter');
 
 //Methods
 
-function getFilter(dimension, operator,  expression) {
+function getDomainByClientId (clientId) {
+    return knex.select('siteName').from('tokens').where('id','=', clientId).then(function(res) {
+        return res[0].siteName;
+    })
+}
+
+function getFilter(dimension, operator, expression) {
     return {
         dimension: dimension,
-        expression: operator,
-        operator: expression
+        operator: operator,
+        expression: expression
     }
 };
 
-function getKsetGroup(start, take, page) {
+function getKsetGroup(start, page, clientId) {
     var config = {
         startRow: start,
-        dimensions: 'query',
-        filters: [ getFilter('page', 'equals', page.url) ]
+        dimensions: ['query'],
+        filters: [ getFilter('page', 'equals', page) ]
     };
-    fetchWithDefaults(page.url, take, config)
 
-};
+    return Promise.resolve(fetchWithDefaults(clientId, config));
+
+}
 
 
 function fetch(domain, options) {
@@ -37,9 +45,11 @@ function fetch(domain, options) {
                     'startDate': options.startDate,
                     'endDate': options.endDate,
                     'dimensions': options.dimensions,
-                    'filters': options.filters,
+                    'dimensionFilterGroups': [
+                        {'filters': options.filters}
+                    ],
                     'startRow': options.startRow,
-                    'rowLimit': 5000,
+                    'rowLimit': 5000
                 }
             }, function (err, resp) {
                 if (err) {
@@ -52,31 +62,25 @@ function fetch(domain, options) {
 }
 
 
-function fetchWithDefaults(domain, rows, options) {
+function fetchWithDefaults(clientId, options) {
 
-    auth.setExistingCredentials();
-    //auth.oauth2Client.
-    rows = rows || 'all';
     options = options || {};
+    options.rows = options.rows || 5000;
     options.filters = options.filters || [];
     options.dimensions = options.dimensions || ['page'];
     options.startDate = options.startDate || timeUtils.getPastXDays(90).startDate;
     options.endDate = options.endDate || timeUtils.getPastXDays(90).endDate;
     options.startRow = options.startRow || 0;
 
-    var result = [];
-    var rowBatch = rows >= 5000 || rows === 'all' ? 5000 : rows;
-    var requestsNumber = Math.floor(rows/rowBatch) - 1 ;
-    var lastRequestBatch = rows % rowBatch;
-
-    auth.setExistingCredentials().then(()=> {
-        fetch(domain, options).then(function(response) {
-            console.log("ANDUVO JOYA!", response);
-        })
-    })
+    return auth.setExistingCredentials(clientId)
+        .then(function() {
+            return getDomainByClientId(clientId);
+        }).then(function(asd) {
+            return fetch(asd, options)
+        }).then(function(response) {
+           return response;
+        });
 
 }
 
-fetchWithDefaults('vivisaludable.com', 'all', null);
-
-exports.fetch = fetchWithDefaults;
+exports.getKsetGroup = getKsetGroup;

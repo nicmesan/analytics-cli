@@ -2,7 +2,8 @@
 
 var apiMock = require('./api-mock');
 var Page = require('../models/page');
-var Kset = require('../models/kset');
+var Kset = require('../collections/kset');
+var searchConsole = require('../services/search-console');
 
 function PageOps(options){
     this.client = options.client;
@@ -17,11 +18,12 @@ function savePagePromise(page) {
     }).save(null, {method: "insert"});
 }
 
-function saveKsetPromise(kset, page) {
-    return new Kset({
-        content: kset.content,
-        pageId: page.id
-    }).save(null, {method: "insert"});
+function saveKsetPromise(ksets) {
+    console.log('saving', ksets.rows.length)
+    var ksetsToSave = Kset.collections.forge(ksets.rows);
+    ksetsToSave.invokeThen('save', null).then(function() {
+        console.log('all data saved');
+    });
 }
 
 
@@ -41,20 +43,24 @@ PageOps.prototype.savePagesByGroups = function() {
     });
 };
 
-PageOps.prototype.saveKsetsByGroups = function(page) {
-
-    var numberOfKsetGroups = apiMock.getKsetGroupsCount(page.url);
-    var ksetCreationPromises = [];
-
-    for (var i=0; i<numberOfKsetGroups; i++) {
-        var pagesGroup = apiMock.getKsetGroup(i, this.ksetsGroupTake, page);
-        pagesGroup.forEach(function(kset) {
-            ksetCreationPromises.push(saveKsetPromise(kset, page));
+PageOps.prototype.saveKsetsByPage = function(page, clientId) {
+    var counter = 0;
+    function getKeywords (start) {
+        console.log('calling')
+        searchConsole.getKsetGroup(start, page, clientId).then(function(data) {
+            console.log('data length response', data.rows.length)
+            var ksetsToSave = Kset.collections.forge(data.rows);
+            ksetsToSave.invokeThen('save', null).then(function() {
+                console.log('all data saved');
+                if (data.rows.length === 5000) {
+                    counter ++;
+                    getKeywords(5000*counter);
+                }
+            });
         });
     }
-    return Promise.all(ksetCreationPromises).then(function(ksets){
-        return ksets;
-    });
+
+    getKeywords(1);
 };
 
 
