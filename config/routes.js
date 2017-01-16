@@ -14,11 +14,17 @@ const pages = require('../app/controllers/page');
 
 module.exports = function (app) {
 
-  app.post('/saveKeywords/:clientId', function(req, resp) {
+  app.post('/save-keywords/:clientId', function(req, resp) {
     var data = req.body;
     var clientId = req.params.clientId;
     PageOps.prototype.saveKsetsByPage(data.page, clientId)
   });
+
+    app.post('/save-pages/:clientId', function(req, resp) {
+        var data = req.body;
+        var clientId = req.params.clientId;
+        PageOps.prototype.savePagesByValue(data.pageSize, clientId)
+    });
 
   /**
    * Error handling

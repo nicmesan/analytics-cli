@@ -64,19 +64,19 @@ function fetch(domain, options) {
 
 function fetchWithDefaults(clientId, options) {
 
-    options = options || {};
-    options.rows = options.rows || 5000;
-    options.filters = options.filters || [];
-    options.dimensions = options.dimensions || ['page'];
-    options.startDate = options.startDate || timeUtils.getPastXDays(90).startDate;
-    options.endDate = options.endDate || timeUtils.getPastXDays(90).endDate;
-    options.startRow = options.startRow || 0;
+    options = Object.assign({
+        rows: 5000,
+        dimensions: ['page'],
+        startDate: timeUtils.getPastXDays(90).startDate,
+        endDate: timeUtils.getPastXDays(90).endDate,
+        startRow: 0
+    }, options);
 
     return auth.setExistingCredentials(clientId)
         .then(function() {
             return getDomainByClientId(clientId);
-        }).then(function(asd) {
-            return fetch(asd, options)
+        }).then(function(domain) {
+            return fetch(domain, options)
         }).then(function(response) {
            return response;
         });

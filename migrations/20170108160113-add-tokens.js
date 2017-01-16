@@ -19,7 +19,9 @@ exports.up = function(db) {
         id:  { type: 'int', primaryKey: true, autoIncrement: true },
         name: {type: 'string'},
         token: {type: 'string'},
-        description: { type: 'string'}
+        description: { type: 'string'},
+        siteName: { type: 'string'},
+        viewId: { type: 'string'}
     });
 };
 

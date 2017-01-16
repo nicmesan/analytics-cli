@@ -1,7 +1,14 @@
 var google = require('googleapis');
 var analytics = google.analyticsreporting('v4');
 var auth = require('./oauth');
+var knex = require('../../config/knex');
 var timeUtils = require('../utils/time_formatter');
+
+function getViewIdByClientId (clientId) {
+    return knex.select('viewId').from('tokens').where('id','=', clientId).then(function(res) {
+        return res[0].viewId;
+    })
+}
 
 function mapParameters(options) {
     var dimensions;
@@ -26,24 +33,34 @@ function mapParameters(options) {
 
 }
 
-function googleAnalyticsFetch(accessToken, viewId, rows, options) {
+function saveTopValuePages(pageSize, clientId) {
+    var config = {
+        pageSize: pageSize,
+        metrics: [{"expression":"ga:pageValue"}],
+        dimensions: [
+            { name: 'ga:pagePath' },
+            { name: "ga:segment" }
+            ],
+        orderBys: [
+            {
+                "sortOrder": "DESCENDING",
+                "fieldName": "ga:pageValue"
+            }
+        ],
+        segments: [
+            {
+                "segmentId": "gaid::TRNU4qP8Q6K5L8nPDicJaA"
+            }
+        ]
+    };
 
-    auth.oauth2Client.setCredentials(accessToken);
+    return Promise.resolve(googleAnalyticsFetch(clientId, config));
 
-    options = options || {};
-    rows = rows || 'all';
-    options.metrics = mapParameters(options).metrics || [{"expression":"ga:pageviews"}];
-    options.dimensions = mapParameters(options).dimensions || [{"name":'ga:pagePath'}];
-    options.startDate = options.startDate || timeUtils.getPastXDays(90).startDate;
-    options.endDate = options.endDate || timeUtils.getPastXDays(90).endDate;
-    options.orderBy = options.orderBy || {};
+}
 
-    var result = [];
-    var pageToken = null;
-    var rowBatch = rows >= 10000 || rows === 'all' ? 10000 : rows;
-    var rowsRemaining = rows;
-
-    function fetchData () {
+function fetch (viewId, options) {
+    console.log('request', viewId, options)
+    return new Promise(function(resolve, reject) {
         analytics.reports.batchGet({
             headers: {
                 "Content-Type": "application/json"
@@ -60,54 +77,46 @@ function googleAnalyticsFetch(accessToken, viewId, rows, options) {
                                     "endDate": options.endDate
                                 }],
                             "metrics": options.metrics,
+                            "orderBys": options.orderBys,
+                            "segments": options.segments,
                             "dimensions": options.dimensions,
-                            "orderBy": options.orderBy,
                             "samplingLevel":  "LARGE",
-                            "pageSize": rowBatch,
-                            "pageToken": pageToken
+                            "pageSize": options.pageSize,
+                            "includeEmptyRows": true
                         }]
             }
         }, function (err, resp) {
-            if (err) { console.log(err) }
-            else {
-                rowsRemaining -= rowBatch;
-                console.log('rows remaining', resp.reports[0].data.rows.length);
-                console.log('nexttoken', resp.reports[0].nextPageToken);
-                console.log('respond length', resp.reports[0].data.rows.length)
-                if (resp.reports[0].data.rows.length === 0) {
-                    console.log('length final', result);
-                    return result;
-                }
-
-                else if (!resp.reports[0].nextPageToken) {
-                    result = result.concat(resp.reports[0].data.rows);
-                    console.log('length final', result.length);
-                    return result;
-                }
-
-                else if (rows === 'all') {
-                    result = result.concat(resp.reports[0].data.rows);
-                    pageToken = resp.reports[0].nextPageToken;
-                    fetchData();
-                }
-
-                else {
-                    result = result.concat(resp.reports[0].data.rows);
-                    pageToken = resp.reports[0].nextPageToken;
-
-                    if(rowsRemaining !== 0) {
-                        rowBatch = rowsRemaining > 10000 ? 10000 : rowsRemaining;
-                        fetchData();
-                    } else {
-                        console.log('termino', result.length);
-                        return result;
-                    }
-                }
+            if (err) {
+                reject(err)
+            } else {
+                resolve(resp)
             }
-        });
-    }
-
-    fetchData()
+        })
+    })
 }
 
-exports.googleAnalyticsFetch = googleAnalyticsFetch;
+
+function googleAnalyticsFetch(clientId, options) {
+
+    options = Object.assign({
+        rows: 10000,
+        metrics: [{"expression":"ga:pageviews"}],
+        dimensions: [{"name":'ga:pagePath'}],
+        startDate: timeUtils.getPastXDays(90).startDate,
+        endDate: timeUtils.getPastXDays(90).endDate,
+        orderBys: {},
+        segments: []
+    }, options);
+
+    return auth.setExistingCredentials(clientId)
+        .then(function() {
+            return getViewIdByClientId(clientId);
+        }).then(function(viewId) {
+            return fetch(viewId, options)
+        }).then(function(response) {
+            return response;
+        });
+
+}
+
+exports.saveTopValuePages = saveTopValuePages;

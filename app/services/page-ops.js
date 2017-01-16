@@ -1,10 +1,11 @@
 "use strict";
 
 var apiMock = require('./api-mock');
-var Page = require('../models/page');
+var Pages = require('../collections/pages');
 var Kset = require('../collections/kset');
 var searchConsole = require('../services/search-console');
-
+var analytics = require('../services/analytics');
+var fs = require('fs');
 function PageOps(options){
     this.client = options.client;
     this.pagesGroupTake = options.pagesGroupTake;
@@ -17,15 +18,6 @@ function savePagePromise(page) {
         value: page.value
     }).save(null, {method: "insert"});
 }
-
-function saveKsetPromise(ksets) {
-    console.log('saving', ksets.rows.length)
-    var ksetsToSave = Kset.collections.forge(ksets.rows);
-    ksetsToSave.invokeThen('save', null).then(function() {
-        console.log('all data saved');
-    });
-}
-
 
 PageOps.prototype.savePagesByGroups = function() {
 
@@ -44,23 +36,35 @@ PageOps.prototype.savePagesByGroups = function() {
 };
 
 PageOps.prototype.saveKsetsByPage = function(page, clientId) {
-    var counter = 0;
     function getKeywords (start) {
         console.log('calling')
         searchConsole.getKsetGroup(start, page, clientId).then(function(data) {
-            console.log('data length response', data.rows.length)
-            var ksetsToSave = Kset.collections.forge(data.rows);
+            console.log('data length response', data)
+            var ksetsToSave = Kset.collections.forge(data.data.rows);
+            console.log('middle')
             ksetsToSave.invokeThen('save', null).then(function() {
                 console.log('all data saved');
-                if (data.rows.length === 5000) {
-                    counter ++;
-                    getKeywords(5000*counter);
-                }
             });
         });
     }
 
     getKeywords(1);
+};
+
+PageOps.prototype.savePagesByValue = function(pageSize, clientId) {
+    analytics.saveTopValuePages(pageSize, clientId).then(function(data) {
+        console.log('data length response', data.reports[0].data)
+        var dataToSave = data.reports[0].data.rows;
+        dataToSave.forEach(function(row) {
+            row.dimensions = row.dimensions[0];
+            row.metrics = row.metrics[0].values[0];
+        });
+        var pagesToSave = Pages.collections.forge(dataToSave);
+        console.log('middle');
+        pagesToSave.invokeThen('save', null).then(function () {
+            console.log('all data saved');
+        });
+    });
 };
 
 
