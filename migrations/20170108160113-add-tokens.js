@@ -17,11 +17,10 @@ exports.setup = function(options, seedLink) {
 exports.up = function(db) {
     return  db.createTable('tokens', {
         id:  { type: 'int', primaryKey: true, autoIncrement: true },
-        name: {type: 'string'},
+        tokenLabel: {type: 'string'},
         token: {type: 'string'},
         description: { type: 'string'},
-        siteName: { type: 'string'},
-        viewId: { type: 'string'}
+        clientId: { type: 'int'} //TODO: Put a foreign key to users
     });
 };
 
