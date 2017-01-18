@@ -9,7 +9,7 @@ var timeUtils = require('../utils/time_formatter');
 //Methods
 
 function getDomainByClientId (clientId) {
-    return knex.select('siteName').from('tokens').where('id','=', clientId).then(function(res) {
+    return knex.select('siteName').from('clients').where('id','=', clientId).then(function(res) {
         return res[0].siteName;
     })
 }

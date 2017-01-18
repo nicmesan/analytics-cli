@@ -3,11 +3,12 @@
  */
 var dbConfig = {
     client: 'mysql',
+    debug: true,
     connection: {
         host     : 'db',
         user     : 'tarantula',
         password : 'tarantula',
-        database : 'tarantula'
+        database : 'tarantula',
     } //TODO ADD to .env
 };
 module.exports = require('knex')(dbConfig);

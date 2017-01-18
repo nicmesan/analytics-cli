@@ -24,7 +24,7 @@ exports.up = function(db) {
 };
 
 exports.down = function(db) {
-    return db.dropTable('users');
+    return db.dropTable('clients');
 };
 
 exports._meta = {

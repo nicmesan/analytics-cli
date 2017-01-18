@@ -5,7 +5,7 @@ var knex = require('../../config/knex');
 var timeUtils = require('../utils/time_formatter');
 
 function getViewIdByClientId (clientId) {
-    return knex.select('viewId').from('tokens').where('id','=', clientId).then(function(res) {
+    return knex.select('viewId').from('clients').where('id','=', clientId).then(function(res) {
         return res[0].viewId;
     })
 }

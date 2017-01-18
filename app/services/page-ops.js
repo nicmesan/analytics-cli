@@ -40,7 +40,7 @@ PageOps.prototype.saveKsetsByPage = function(page, clientId) {
         console.log('calling')
         searchConsole.getKsetGroup(start, page, clientId).then(function(data) {
             console.log('data length response', data)
-            var ksetsToSave = Kset.collections.forge(data.data.rows);
+            var ksetsToSave = Kset.collections.forge(data.rows);
             console.log('middle')
             ksetsToSave.invokeThen('save', null).then(function() {
                 console.log('all data saved');

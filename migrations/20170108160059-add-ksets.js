@@ -17,12 +17,13 @@ exports.setup = function(options, seedLink) {
 exports.up = function(db) {
     return  db.createTable('ksets', {
         id:  { type: 'int', primaryKey: true, autoIncrement: true },
-        keys: {type: 'int'},
+        keys: {type: 'string'},
         pathName: { type: 'int'},
         clicks: {type: 'int'},
         impressions:  {type: 'int'},
         ctr: { type: 'decimal'},
         position: { type: 'decimal'},
+        pageId : {type: 'int'}
 
     }).then(function() {
         db.addForeignKey(
