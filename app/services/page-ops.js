@@ -19,6 +19,13 @@ function savePagePromise(page) {
     }).save(null, {method: "insert"});
 }
 
+function formatPageRow (row) {
+    return {
+        pageValue: row.metrics[0].values[0],
+        pagePath: row.dimensions[0]
+    }
+}
+
 PageOps.prototype.savePagesByGroups = function() {
 
     var numberOfPageGroups = apiMock.getPageGroupsCount();
@@ -35,13 +42,17 @@ PageOps.prototype.savePagesByGroups = function() {
     });
 };
 
-PageOps.prototype.saveKsetsByPage = function(page, clientId) {
+PageOps.prototype.saveKsetsByPage = function(pageId, clientId) {
     function getKeywords (start) {
         console.log('calling')
-        searchConsole.getKsetGroup(start, page, clientId).then(function(data) {
-            console.log('data length response', data)
-            var ksetsToSave = Kset.collections.forge(data.rows);
-            console.log('middle')
+        searchConsole.getKsetGroup(start, pageId, clientId).then(function(data) {
+            console.log('data length response', data);
+            var dataToSave = data.rows;
+            dataToSave.forEach(function(row) {
+                row.pagePath =
+                row.pageId = pageId;
+            });
+            var ksetsToSave = Kset.collections.forge(dataToSave);
             ksetsToSave.invokeThen('save', null).then(function() {
                 console.log('all data saved');
             });
@@ -56,8 +67,7 @@ PageOps.prototype.savePagesByValue = function(pageSize, clientId) {
         console.log('data length response', data.reports[0].data)
         var dataToSave = data.reports[0].data.rows;
         dataToSave.forEach(function(row) {
-            row.dimensions = row.dimensions[0];
-            row.metrics = row.metrics[0].values[0];
+            formatPageRow(row);
         });
         var pagesToSave = Pages.collections.forge(dataToSave);
         console.log('middle');

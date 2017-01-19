@@ -14,6 +14,13 @@ function getDomainByClientId (clientId) {
     })
 }
 
+function getPagePathByPageId (pageId) {
+    return knex.select('dimensions').from('pages').where('id','=', pageId).then(function(res) {
+        return res[0].dimensions;
+    })
+}
+
+
 function getFilter(dimension, operator, expression) {
     return {
         dimension: dimension,
@@ -22,14 +29,23 @@ function getFilter(dimension, operator, expression) {
     }
 };
 
-function getKsetGroup(start, page, clientId) {
-    var config = {
-        startRow: start,
-        dimensions: ['query'],
-        filters: [ getFilter('page', 'equals', page) ]
-    };
+function getKsetGroup(start, pageId, clientId) {
 
-    return Promise.resolve(fetchWithDefaults(clientId, config));
+    return getPagePathByPageId(pageId).then(function(path) {
+        return getDomainByClientId(clientId).then(function(domain) {
+            var fullUrl = 'http://' + domain + path;
+            var config = {
+                startRow: start,
+                dimensions: ['query'],
+                filters: [ getFilter('page', 'equals', fullUrl) ]
+            };
+
+            return Promise.resolve(fetchWithDefaults(domain, config, clientId));
+        })
+
+    });
+
+
 
 }
 
@@ -62,7 +78,7 @@ function fetch(domain, options) {
 }
 
 
-function fetchWithDefaults(clientId, options) {
+function fetchWithDefaults(domain, options, clientId) {
 
     options = Object.assign({
         rows: 5000,
@@ -74,8 +90,6 @@ function fetchWithDefaults(clientId, options) {
 
     return auth.setExistingCredentials(clientId)
         .then(function() {
-            return getDomainByClientId(clientId);
-        }).then(function(domain) {
             return fetch(domain, options)
         }).then(function(response) {
            return response;
