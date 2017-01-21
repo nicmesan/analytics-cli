@@ -6,6 +6,9 @@ var Kset = require('../collections/kset');
 var searchConsole = require('../services/search-console');
 var analytics = require('../services/analytics');
 var fs = require('fs');
+var Promise = require('bluebird');
+var customErrors = require('./custom-errors');
+
 function PageOps(options){
     this.client = options.client;
     this.pagesGroupTake = options.pagesGroupTake;
@@ -41,42 +44,5 @@ PageOps.prototype.savePagesByGroups = function() {
         return pages;
     });
 };
-
-PageOps.prototype.saveKsetsByPage = function(pageId, clientId) {
-    function getKeywords (start) {
-        console.log('calling')
-        searchConsole.getKsetGroup(start, pageId, clientId).then(function(data) {
-            console.log('data length response', data);
-            var dataToSave = data.rows;
-            dataToSave.forEach(function(row) {
-                row.pagePath =
-                row.pageId = pageId;
-            });
-            var ksetsToSave = Kset.collections.forge(dataToSave);
-            ksetsToSave.invokeThen('save', null).then(function() {
-                console.log('all data saved');
-            });
-        });
-    }
-
-    getKeywords(1);
-};
-
-PageOps.prototype.savePagesByValue = function(pageSize, clientId) {
-    analytics.saveTopValuePages(pageSize, clientId).then(function(data) {
-        console.log('data length response', data.reports[0].data)
-        var dataToSave = data.reports[0].data.rows;
-        dataToSave.forEach(function(row) {
-            formatPageRow(row);
-        });
-        var pagesToSave = Pages.collections.forge(dataToSave);
-        console.log('middle');
-        pagesToSave.invokeThen('save', null).then(function () {
-            console.log('all data saved');
-        });
-    });
-};
-
-
 
 module.exports = PageOps;
