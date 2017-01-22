@@ -6,6 +6,7 @@ const fs = require('fs');
 const join = require('path').join;
 const express = require('express');
 const config = require('./config');
+const winston = require('winston');
 
 const models = join(__dirname, 'app/models');
 const port = process.env.PORT || 3000;
@@ -21,12 +22,14 @@ fs.readdirSync(models)
 // Bootstrap routes
 require('./config/express')(app);
 require('./config/routes')(app);
+winston.info('Server listening on port: ' + port, {});
 
 
 function listen () {
   if (app.get('env') === 'test') return;
   app.listen(port);
-  console.log('Express app started on port ' + port);
+
+
 }
 
 function connect () {
