@@ -10,29 +10,20 @@ const winston = require('winston');
 
 const models = join(__dirname, 'app/models');
 const port = process.env.PORT || 3000;
+var bodyParser = require('body-parser');
 
 const app = express();
-const connection = connect();
+const Routes = require('./app/routes');
 
-// Bootstrap models
-fs.readdirSync(models)
-  .filter(file => ~file.indexOf('.js'))
-  .forEach(file => require(join(models, file)));
+// // Bootstrap models
+// fs.readdirSync(models)
+//   .filter(file => ~file.indexOf('.js'))
+//   .forEach(file => require(join(models, file)));
 
 // Bootstrap routes
-require('./config/express')(app);
-require('./config/routes')(app);
-winston.info('Server listening on port: ' + port, {});
 
-
-function listen () {
-  if (app.get('env') === 'test') return;
-  app.listen(port);
-
-
-}
-
-function connect () {
-
-
-}
+app.use(bodyParser.json({ type: 'application/json' }));
+app.use(Routes);
+app.listen(3000, function () {
+    winston.info('Server listening on port: ' + port, {});
+});

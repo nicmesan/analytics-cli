@@ -8,20 +8,20 @@ var timeUtils = require('../utils/time_formatter');
 
 //Methods
 
-function getDomainByClientId (clientId) {
+exports.getDomainByClientId = function (clientId) {
     return knex.select('siteName').from('clients').where('id','=', clientId).then(function(res) {
         return res[0].siteName;
     })
-}
+};
 
-function getPagePathByPageId (pageId) {
-    return knex.select('dimensions').from('pages').where('id','=', pageId).then(function(res) {
-        return res[0].dimensions;
+exports.getPagePathByPageId = function (pageId) {
+    return knex.select('pagePath').from('pages').where('id','=', pageId).then(function(res) {
+        return res[0].pagePath;
     })
-}
+};
 
 
-function getFilter(dimension, operator, expression) {
+exports.getFilter = function (dimension, operator, expression) {
     return {
         dimension: dimension,
         operator: operator,
@@ -29,28 +29,15 @@ function getFilter(dimension, operator, expression) {
     }
 };
 
-function getKsetGroup(start, pageId, clientId) {
+exports.fetch = function (domain, options) {
+    options = Object.assign({
+        rows: 5000,
+        dimensions: ['page'],
+        startDate: timeUtils.getPastXDays(90).startDate,
+        endDate: timeUtils.getPastXDays(90).endDate,
+        startRow: 0
+    }, options);
 
-    return getPagePathByPageId(pageId).then(function(path) {
-        return getDomainByClientId(clientId).then(function(domain) {
-            var fullUrl = 'http://' + domain + path;
-            var config = {
-                startRow: start,
-                dimensions: ['query'],
-                filters: [ getFilter('page', 'equals', fullUrl) ]
-            };
-
-            return Promise.resolve(fetchWithDefaults(domain, config, clientId));
-        })
-
-    });
-
-
-
-}
-
-
-function fetch(domain, options) {
     return new Promise(function(resolve, reject) {
         webmasters.searchanalytics.query(
             {
@@ -75,26 +62,4 @@ function fetch(domain, options) {
                 }
             });
     });
-}
-
-
-function fetchWithDefaults(domain, options, clientId) {
-
-    options = Object.assign({
-        rows: 5000,
-        dimensions: ['page'],
-        startDate: timeUtils.getPastXDays(90).startDate,
-        endDate: timeUtils.getPastXDays(90).endDate,
-        startRow: 0
-    }, options);
-
-    return auth.setExistingCredentials(clientId)
-        .then(function() {
-            return fetch(domain, options)
-        }).then(function(response) {
-           return response;
-        });
-
-}
-
-exports.getKsetGroup = getKsetGroup;
+};

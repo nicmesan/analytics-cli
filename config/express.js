@@ -13,5 +13,5 @@ var env = process.env.NODE_ENV || 'development';
  */
 
 module.exports = function (app) {
-   app.use(bodyParser.json({ type: 'application/json' }));
+
 };

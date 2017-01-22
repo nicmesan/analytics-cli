@@ -3,7 +3,6 @@
  */
 var dbConfig = {
     client: 'mysql',
-    debug: true,
     connection: {
         host     : 'db',
         user     : 'tarantula',
