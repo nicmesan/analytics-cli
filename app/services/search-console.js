@@ -5,6 +5,8 @@ var webmasters = google.webmasters('v3');
 var auth = require('./oauth');
 var knex = require('../../config/knex');
 var timeUtils = require('../utils/time_formatter');
+var winston = require('winston');
+
 
 //Methods
 
@@ -56,9 +58,15 @@ exports.fetch = function (domain, options) {
                 }
             }, function (err, resp) {
                 if (err) {
-                    reject(err)
+                    reject(err);
+                    winston.error('Error gathering ksets for site ' + domain, {
+                        response: resp,
+                        error: err,
+                        options: options
+                    });
                 } else {
-                    resolve(resp)
+                    resolve(resp);
+                    winston.info('Gathered ksets for site' + domain, {});
                 }
             });
     });
