@@ -19,6 +19,7 @@ exports.up = function(db) {
         id:  { type: 'int', primaryKey: true, autoIncrement: true },
         keys: { type: 'string'},
         target_url: { type: 'string'},
+        clientId: {type: 'int'}
     });
 };
 
