@@ -6,10 +6,12 @@ const fs = require('fs');
 const join = require('path').join;
 const express = require('express');
 const config = require('./config');
+const winston = require('winston');
 
 const models = join(__dirname, 'app/models');
 const port = process.env.PORT || 3000;
 var bodyParser = require('body-parser');
+var errorHandler = require('./app/middlewares/error-handler');
 
 const app = express();
 const Routes = require('./app/routes');
@@ -23,16 +25,7 @@ const Routes = require('./app/routes');
 
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(Routes);
+app.use(errorHandler)
 app.listen(3000, function () {
-    console.log('Example app listening on port 3000!')
-})
-// function listen () {
-//   if (app.get('env') === 'test') return;
-//   app.listen(port);
-//   console.log('Express app started on port ' + port);
-// }
-
-// function connect () {
-//
-//
-// }
+    winston.info('Server listening on port: ' + port, {});
+});

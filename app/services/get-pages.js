@@ -1,5 +1,0 @@
-const googleAnalyticsFetch = require('./analytics');
-
-
-
-

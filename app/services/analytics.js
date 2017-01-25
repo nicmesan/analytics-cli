@@ -4,6 +4,7 @@ var auth = require('./oauth');
 var knex = require('../../config/knex');
 var timeUtils = require('../utils/time_formatter');
 var Promise = require('bluebird');
+var winston = require('winston');
 
 exports.getViewIdByClientId = function (clientId) {
     return knex.select('viewId').from('clients').where('id','=', clientId).then(function(res) {
@@ -50,9 +51,15 @@ exports.fetch = function (viewId, options) {
             }
         }, function (err, resp) {
             if (err) {
-                reject(err)
+                reject(err);
+                winston.error('Error gathering analytics pages', {
+                    response: resp,
+                    error: err,
+                    options: options
+                });
             } else {
                 resolve(resp)
+                winston.info('Gathered pages for client', {});
             }
         })
     })
