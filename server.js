@@ -16,7 +16,7 @@ const Routes = require('./app/routes');
 
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(Routes);
-app.use(errorHandler)
+app.use(errorHandler);
 app.listen(3000, function () {
     winston.info('Server listening on port: ' + port, {});
 });

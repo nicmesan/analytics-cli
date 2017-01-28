@@ -18,7 +18,8 @@ exports.up = function(db) {
   return  db.createTable('pages', {
       id:  { type: 'int', primaryKey: true, autoIncrement: true },
       pagePath: { type: 'string', unique: true },
-      pageValue: {type:'decimal'}
+      pageValue: {type:'decimal'},
+      clientId: {type: 'int'}
   });
 };
 

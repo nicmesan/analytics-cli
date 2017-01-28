@@ -15,15 +15,16 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-    return  db.createTable('filtered_ksets', {
+    return  db.createTable('keywords', {
         id:  { type: 'int', primaryKey: true, autoIncrement: true },
-        keys: {type: 'string'},
-
+        keyword: {type: 'string'},
+        ksetId: { type: 'int'}
     });
 };
 
 exports.down = function(db) {
-    return db.dropTable('filtered_ksets');
+    return db.dropTable('keywords');
+  return null;
 };
 
 exports._meta = {
