@@ -19,7 +19,7 @@ exports.up = function(db) {
       id:  { type: 'int', primaryKey: true, autoIncrement: true },
       pagePath: { type: 'string', unique: true },
       pageValue: {type:'decimal'},
-      sessions: {type: 'decimal'},
+      sessions: {type: 'integer'},
       clientId: {type: 'int'}
   });
 };

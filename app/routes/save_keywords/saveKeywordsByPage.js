@@ -1,4 +1,5 @@
 var Ksets = require('../../collections/kset');
+var winston = require('winston');
 var searchConsole = require('../../services/search-console');
 var auth = require('../../services/oauth');
 
@@ -38,6 +39,7 @@ function saveKeywordsByPage (pageId, clientId, next) {
                                    };
                                    return searchConsole.fetch(domain, options)
                                        .then( function (data) {
+                                           winston.info('Keywords successfully fetched')
                                            var dataToSave = data.rows;
                                            if (!dataToSave) {
                                                next('Client has 0 keywords for that page');
@@ -48,7 +50,7 @@ function saveKeywordsByPage (pageId, clientId, next) {
                                                    row.pageId = pageId;
                                                });
                                                var keywordsToSave = Ksets.collections.forge(dataToSave);
-                                               keywordsToSave.invokeThen('save', null)
+                                               return keywordsToSave.invokeThen('save', null)
                                                    .then(function() {
                                                        return Promise.resolve('All keywords have been saved');
                                                    }, function (error) {
@@ -71,3 +73,5 @@ function saveKeywordsByPage (pageId, clientId, next) {
                })
     }
 }
+
+exports.getKeywords = saveKeywordsByPage;
