@@ -10,7 +10,7 @@ function filterProducts(clientId) {
 };
 
 function getKsets(clientId) {
-    return knex.from('ksets').innerJoin('pages', 'ksets.pageId', 'pages.id').where('clientId','=', clientId);
+    return knex.from('ksets').innerJoin('pages', 'ksets.pageId', 'pages.id').where('fclientId','=', clientId);
 };
 
 function insertKeyword(keyword, ksetId) {
@@ -28,13 +28,14 @@ function splitKsets(clientId) {
             kset.keys.split(' ').forEach(function(keyword) {
                 insertPromises.push(insertKeyword(keyword, kset.id));
             })
-        })
+        });
+        return Promise.all(insertPromises).then(function(values) {
+            return values
+        }, function(error) {
+            next({ message: 'There was an error inserting splitted keywords', error : error });
+        });
     })
-    return Promise.all(insertPromises).then(function(values) {
-        return values
-    }, function(error) {
-        next({ message: 'There was an error inserting splitted keywords', error : error });
-    });
+
 }
 
 //Public

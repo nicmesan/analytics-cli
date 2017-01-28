@@ -1,6 +1,6 @@
 var productFilter = require('../../services/product-filter');
 
-exports.splitKsets = function (req, res) {
+exports.splitKsets = function (req, res, next) {
     var clientId = req.params.clientId;
 
     if (!clientId) {
@@ -10,7 +10,7 @@ exports.splitKsets = function (req, res) {
             .then(function(success) {
                 res.send({ message: 'Ksets correctly splitted'})
             }, function (error) {
-                res.status(400).send({ message: 'Database error splitting ksets', error : error });
+                next(error);
             })
             .catch(function (error) {
                 res.status(500).json({message: "Internal server error ", error: error})
