@@ -1,6 +1,6 @@
 analytics-cli:
   build: .
-  command: node server
+  command: nodemon server
   ports:
     - "3000:3000"
   volumes:

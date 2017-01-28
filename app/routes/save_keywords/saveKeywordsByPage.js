@@ -9,13 +9,16 @@ exports.saveKeywords = function (req, res, next) {
 
     saveKeywordsByPage(pageId, clientId, next)
         .then(function (message) {
-            res.status(200).json(message)
+            console.log(message);
+          if(message) {
+            res.status(200).json({message: 'All pages have been saved successfully'})
+          }
         })
 };
 
 
 function saveKeywordsByPage (pageId, clientId, next) {
-
+    console.log(pageId)
     if (!pageId || !clientId) {
         next({message: 'Include page size and client ID'})
     }
@@ -47,24 +50,24 @@ function saveKeywordsByPage (pageId, clientId, next) {
                                                var keywordsToSave = Ksets.collections.forge(dataToSave);
                                                keywordsToSave.invokeThen('save', null)
                                                    .then(function() {
-                                                       return 'All keywords have been saved';
+                                                       return Promise.resolve('All keywords have been saved');
                                                    }, function (error) {
-                                                       next({ message: 'Data could not be saved in the DB', error : error });
+                                                       next({ message: 'Data could not be saved in the DB', error : error.message });
                                                    });
                                            }
 
                                        })
                                }, function (error) {
-                                   next({message: "Credentials could'nt be set", error: error})
+                                   next({message: "Credentials could'nt be set", error: error.message, code: 403})
                                })
                        }, function (error) {
-                           next({ message: 'Cannot find client domain in DB', error : error });
+                           next({ message: 'Cannot find client domain in DB', error : error.message, code: 400 });
                        })
                }, function (error) {
-                   next('Cannot find page path in DB');
+                   next({ message: 'Cannot find page path in DB', error : error.message, code: 400 });
                })
                .catch(function (error) {
-                   next({message: "Internal server error ", error: error})
+                   next({message: "Internal server error ", error: error.message, code: 400})
                })
     }
 }

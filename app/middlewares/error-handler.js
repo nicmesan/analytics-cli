@@ -1,5 +1,4 @@
-module.exports = function errorHandler(err, req, res, next)
-{
-    res.status(500);
-    res.render('error', { error: err });
+module.exports = function errorHandler(err, req, res, next) {
+    var errorCode = err.code || 500;
+    res.status(errorCode).send(err);
 }

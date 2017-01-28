@@ -1,20 +1,13 @@
 var Promise = require('bluebird')
 
 exports.test = function (req, res, next) {
-        Promise.resolve('asd')
+        return aaa()
         .then(function(data) {
            return 1
-                .then(function(data){
-                    return Promise.reject();
-                }, function(error) {
-                    next('error 1')
-                })
-        }, function(error) {
-            next('error 2')
-    })
-    .catch(function (error){
-        next('error catched')
-    })
+        })
+        .then(function(data){
+            res.send(2) ;
+        })
 }
 
 function aaa () {
