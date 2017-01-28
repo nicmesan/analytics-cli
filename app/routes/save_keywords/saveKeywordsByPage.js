@@ -2,6 +2,7 @@ var Ksets = require('../../collections/kset');
 var winston = require('winston');
 var searchConsole = require('../../services/search-console');
 var auth = require('../../services/oauth');
+var knex = require('../../../config/knex');
 
 
 exports.saveKeywords = function (req, res, next) {
@@ -17,9 +18,20 @@ exports.saveKeywords = function (req, res, next) {
         })
 };
 
+function saveRows(rows) {
+    return knex.transaction(function(trx) {
+        knex.insert(rows)
+            .into('ksets')
+            .transacting(trx)
+            .then(trx.commit)
+            .catch(trx.rollback);
+    }).catch(function(error) {
+        console.error(error);
+    });
+}
+
 
 function saveKeywordsByPage (pageId, clientId, next) {
-    console.log(pageId)
     if (!pageId || !clientId) {
         next({message: 'Include page size and client ID'})
     }
@@ -39,7 +51,7 @@ function saveKeywordsByPage (pageId, clientId, next) {
                                    };
                                    return searchConsole.fetch(domain, options)
                                        .then( function (data) {
-                                           winston.info('Keywords successfully fetched')
+                                           winston.info('Keywords successfully fetched');
                                            var dataToSave = data.rows;
                                            if (!dataToSave) {
                                                next('Client has 0 keywords for that page');
@@ -49,13 +61,7 @@ function saveKeywordsByPage (pageId, clientId, next) {
                                                    row.keys = row.keys[0];
                                                    row.pageId = pageId;
                                                });
-                                               var keywordsToSave = Ksets.collections.forge(dataToSave);
-                                               return keywordsToSave.invokeThen('save', null)
-                                                   .then(function() {
-                                                       return Promise.resolve('All keywords have been saved');
-                                                   }, function (error) {
-                                                       next({ message: 'Data could not be saved in the DB', error : error.message });
-                                                   });
+                                           return saveRows(dataToSave);
                                            }
 
                                        })
