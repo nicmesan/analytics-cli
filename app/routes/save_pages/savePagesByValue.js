@@ -4,6 +4,7 @@ var auth = require('../../services/oauth');
 var Promise = require('bluebird');
 
 exports.saveTopValuePages = function (req, res) {
+    var clientId = req.params.clientId;
     getPages (res, req)
         .then(function (data) {
             var dataToSave = data.reports[0].data.rows;
@@ -12,10 +13,10 @@ exports.saveTopValuePages = function (req, res) {
             }
             else {
                 dataToSave = dataToSave.map(function(row) {
-                    return formatPageRow(row);
+                    return formatPageRow(row, clientId);
                 });
                 var pagesToSave = Pages.collections.forge(dataToSave);
-                pagesToSave.invokeThen('save', null)
+                return pagesToSave.invokeThen('save', null)
                     .then(function () {
                         res.status(200).send({ message: dataToSave.length + ' pages successfully saved'});
                     }, function (error) {
@@ -30,13 +31,17 @@ exports.saveTopValuePages = function (req, res) {
         })
 };
 
-exports.getPages = function getPages (res, req) {
+function getPages (res, req) {
     var pageSize = req.body.pageSize;
     var clientId = req.params.clientId;
+    var orderBy = req.body.orderBy;
 
     var options = {
         pageSize: pageSize,
-        metrics: [{"expression":"ga:pageValue"}],
+        metrics: [
+            {"expression": "ga:pageValue"},
+            {"expression": "ga:sessions"}
+            ],
         dimensions: [
             { name: 'ga:pagePath' },
             { name: "ga:segment" }
@@ -44,7 +49,7 @@ exports.getPages = function getPages (res, req) {
         orderBys: [
             {
                 "sortOrder": "DESCENDING",
-                "fieldName": "ga:pageValue"
+                "fieldName": orderBy || "ga:pageValue"
             }
         ],
         segments: [
@@ -57,6 +62,7 @@ exports.getPages = function getPages (res, req) {
     if (!pageSize || !clientId) { res.status(400).json({ message: 'Include page size and client ID'})}
 
     else {
+
         return Promise.resolve(auth.setExistingCredentials(clientId)
             .then(function () {
                 return analytics.getViewIdByClientId(clientId)
@@ -75,9 +81,11 @@ exports.getPages = function getPages (res, req) {
 
 
 
-function formatPageRow (row) {
+function formatPageRow (row, clientId) {
     return {
         pageValue: row.metrics[0].values[0],
-        pagePath: row.dimensions[0]
+        pagePath: row.dimensions[0],
+        sessions: row.metrics[0].values[1],
+        clientId: clientId
     }
 }
