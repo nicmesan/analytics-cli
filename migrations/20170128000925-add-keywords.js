@@ -15,16 +15,15 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  return  db.createTable('pages', {
-      id:  { type: 'int', primaryKey: true, autoIncrement: true },
-      pagePath: { type: 'string', unique: true },
-      pageValue: {type:'decimal'},
-      clientId: {type: 'int'}
-  });
+    return  db.createTable('keywords', {
+        id:  { type: 'int', primaryKey: true, autoIncrement: true },
+        keyword: {type: 'string'},
+        ksetId: { type: 'int'}
+    });
 };
 
 exports.down = function(db) {
-  return db.dropTable('pages');
+    return db.dropTable('keywords');
 };
 
 exports._meta = {
