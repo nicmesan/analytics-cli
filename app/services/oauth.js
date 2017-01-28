@@ -30,7 +30,7 @@ function setExistingCredentials(clientId) {
                 access_token: accessToken,
                 refresh_token: refreshToken
             });
-            winston.info('Setting oauth2 credentials', { client: oauth2Client});
+            winston.info('Setting oauth2 credentials');
         })
     });
 }
