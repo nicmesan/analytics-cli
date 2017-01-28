@@ -8,11 +8,24 @@ exports.saveAllKeywords = function (req, res, next) {
     Pages.collections.forge({clientId: clientId})
         .fetch()
         .then(function (pages) {
-            Promise.map(pages.toJSON(), function (page) {
-                return getKeywords(page.id, clientId, next)
-            })
-            .then(function () {
-                return res.status(400).send({message: 'All keywords were saved'});
-            })
+            var promisesList = [];
+
+            for(var i = 0; i < pages.length; i += 5) {
+
+                var pagesBatch = pages.toJSON().slice(i ,i + 5);
+
+                pagesBatch.forEach(function(page) {
+                    promisesList.push(
+                        Promise.delay(i * 1000).then(function() {
+                            return getKeywords(page.id, clientId, next)
+                        })
+                    );
+                });
+
+            };
+
+            Promise.all(promisesList).then(function() {
+                    res.status(200).json({message: "Keywords correctly saved"})
+            });
         })
 };

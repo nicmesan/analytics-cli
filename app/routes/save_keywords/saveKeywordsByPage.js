@@ -53,15 +53,15 @@ function saveKeywordsByPage (pageId, clientId, next) {
                                        .then( function (data) {
                                            winston.info('Keywords successfully fetched');
                                            var dataToSave = data.rows;
-                                           if (!dataToSave) {
-                                               next('Client has 0 keywords for that page');
-                                           }
-                                           else {
+                                           if (dataToSave) {
                                                dataToSave.forEach(function(row) {
                                                    row.keys = row.keys[0];
                                                    row.pageId = pageId;
                                                });
-                                           return saveRows(dataToSave);
+                                               return saveRows(dataToSave);
+                                           } else {
+                                               //No keywords for that page
+                                               return [];
                                            }
 
                                        })
