@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
-var saveKeywordsByPage = require('../save_keywords/saveKeywordsByPage').saveKeywordsByPage;
-var getKeywords = require('../save_keywords/saveKeywordsByPage').getKeywords;
+var saveKeywordsByPage = require('../save-keywords/save-keywords-by-page').saveKeywordsByPage;
+var getKeywords = require('../save-keywords/save-keywords-by-page').getKeywords;
 var Pages = require('../../collections/pages');
 
 exports.saveAllKeywords = function (req, res, next) {

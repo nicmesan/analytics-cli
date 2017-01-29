@@ -41,32 +41,27 @@ function saveKeywordsByPage (pageId, clientId, next) {
                .then(function (pagePath) {
                    return searchConsole.getDomainByClientId(clientId)
                        .then(function (domain) {
-                           return auth.setExistingCredentials(clientId)
-                               .then(function () {
-                                   var fullUrl = 'http://' + domain + pagePath;
-                                   var options = {
-                                       startRow: 1,
-                                       dimensions: ['query'],
-                                       filters: [ searchConsole.getFilter('page', 'equals', fullUrl) ]
-                                   };
-                                   return searchConsole.fetch(domain, options)
-                                       .then( function (data) {
-                                           winston.info('Keywords successfully fetched');
-                                           var dataToSave = data.rows;
-                                           if (dataToSave) {
-                                               dataToSave.forEach(function(row) {
-                                                   row.keys = row.keys[0];
-                                                   row.pageId = pageId;
-                                               });
-                                               return saveRows(dataToSave);
-                                           } else {
-                                               //No keywords for that page
-                                               return [];
-                                           }
+                           var fullUrl = 'http://' + domain + pagePath;
+                           var options = {
+                               startRow: 1,
+                               dimensions: ['query'],
+                               filters: [ searchConsole.getFilter('page', 'equals', fullUrl) ]
+                           };
+                           return searchConsole.fetch(domain, options)
+                               .then( function (data) {
+                                   var dataToSave = data.rows;
+                                   if (dataToSave) {
+                                       winston.debug(data.rows.length + ' keywords fetched from page id ' + pageId );
+                                       dataToSave.forEach(function(row) {
+                                           row.keys = row.keys[0];
+                                           row.pageId = pageId;
+                                       });
+                                       return saveRows(dataToSave);
+                                   } else {
+                                       //No keywords for that page
+                                       return [];
+                                   }
 
-                                       })
-                               }, function (error) {
-                                   next({message: "Credentials could'nt be set", error: error.message, code: 403})
                                })
                        }, function (error) {
                            next({ message: 'Cannot find client domain in DB', error : error.message, code: 400 });

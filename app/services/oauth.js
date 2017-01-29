@@ -16,7 +16,11 @@ var url = oauth2Client.generateAuthUrl({
 });
 
 function getAccessToken(clientId) {
-    return Promise.resolve(tokenManager.getToken('googleApiAccessToken', clientId));
+    console.log('entro')
+    return tokenManager.getToken('googleApiAccessToken', clientId)
+        .then(function(data) {
+            console.log('data', data)
+    })
 }
 
 function getRefreshToken(clientId) {
@@ -26,11 +30,11 @@ function getRefreshToken(clientId) {
 function setExistingCredentials(clientId) {
     return getAccessToken(clientId).then(function(accessToken)  {
         return getRefreshToken(clientId).then(function (refreshToken) {
-            oauth2Client.setCredentials({
+            winston.info('Setting oauth2 credentials');
+            return oauth2Client.setCredentials({
                 access_token: accessToken,
                 refresh_token: refreshToken
             });
-            winston.info('Setting oauth2 credentials');
         })
     });
 }

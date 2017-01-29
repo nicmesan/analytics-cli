@@ -62,24 +62,14 @@ function getPages (res, req) {
     if (!pageSize || !clientId) { res.status(400).json({ message: 'Include page size and client ID'})}
 
     else {
-
-        return Promise.resolve(auth.setExistingCredentials(clientId)
-            .then(function () {
-                return analytics.getViewIdByClientId(clientId)
-                    .then(function (viewId) {
-                        return analytics.fetch(viewId, options)
-                    }, function (error) {
-                        res.status(400).json({message: "Client ID not found", error: error})
-                    })
+        return analytics.getViewIdByClientId(clientId)
+            .then(function (viewId) {
+                return analytics.fetch(viewId, options)
             }, function (error) {
-                res.status(400).json({message: "Credentials could'nt be set", error: error})
+                res.status(400).json({message: "Client ID not found", error: error})
             })
-        )
     }
 }
-
-
-
 
 function formatPageRow (row, clientId) {
     return {

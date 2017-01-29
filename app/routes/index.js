@@ -1,12 +1,15 @@
 var express = require('express');
 var Router = express.Router();
 
+// google API
 
-//Router.get('/test', require('./test').test);
-Router.post('/save-pages/:clientId', require('./save_pages/savePagesByValue').saveTopValuePages);
-Router.post('/save-keywords/:clientId', require('./save_keywords/saveKeywordsByPage').saveKeywords);
-Router.post('/apply-product-filter/:clientId', require('./apply_product_filter/applyProductFilter').applyProductFilter);
-Router.post('/split-ksets/:clientId', require('./split_ksets/split-ksets').splitKsets);
-Router.post('/save-all-keywords/:clientId', require('./get_keywords_all_pages/get_keywords_all_pages').saveAllKeywords);
+Router.post('/google-api/save-pages/:clientId', require('./save-pages/save-pages-by-value').saveTopValuePages);
+Router.post('/google-api/save-keywords/:clientId', require('./save-keywords/save-keywords-by-page').saveKeywords);
+Router.post('/google-api/save-all-keywords/:clientId', require('./get-keywords-all-pages/get_keywords_all_pages').saveAllKeywords);
+
+// Other
+
+Router.post('/apply-product-filter/:clientId', require('./apply-product-filter/apply-product-filter').applyProductFilter);
+Router.post('/split-ksets/:clientId', require('./split-ksets/split-ksets').splitKsets);
 
 exports = module.exports = Router;
