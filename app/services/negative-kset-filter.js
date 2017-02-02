@@ -29,6 +29,7 @@ function isPositiveKeyword(keyword) {
 };
 
 function formatKset(kset) {
+    console.log(kset);
     return {
         id: kset.id,
         keys: kset.keys,
@@ -42,24 +43,10 @@ function isPositiveKset(kset) {
     });
 
     return Promise.all(promises).then(function(values) {
-        return values.some(function(value) {
-            return value
-        });
+        var result = !(values.indexOf(false) > -1);
+        if (result) {return kset}
     });
 }
-
-function filterNegativeKsets(clientId) {
-    winston.info("Filtering ksets with negative keywords for client " + clientId);
-
-    return getFilteredKsets(clientId).then(function(ksets) {
-        Promise.filter(ksets , function(kset) {
-                return isPositiveKset(kset);
-        }).then(function(res) {
-            insertWhiteKsets(res);
-        });
-    });
-
-};
 
 //Public
 module.exports = {
@@ -67,10 +54,10 @@ module.exports = {
         winston.info("Filtering ksets with negative keywords for client " + clientId);
 
         return getFilteredKsets(clientId).then(function(ksets) {
-            Promise.filter(ksets , function(kset) {
+            return Promise.filter(ksets , function(kset) {
                 return isPositiveKset(kset);
             }).then(function(res) {
-                insertWhiteKsets(res);
+                return insertWhiteKsets(res);
             });
         });
     }
