@@ -5,7 +5,7 @@ var Promise = require('bluebird');
 //Private
 
 function getFilteredKsets(clientId) {
-    return knex.from('ksets').innerJoin('pages', 'ksets.pageId', 'pages.id').where('clientId','=', clientId);
+    return knex.select('ksets.id','keys','pageId').from('ksets').innerJoin('pages', 'ksets.pageId', 'pages.id').where('clientId','=', clientId);
 };
 
 function insertWhiteKsets(whiteKsets) {
@@ -29,7 +29,6 @@ function isPositiveKeyword(keyword) {
 };
 
 function formatKset(kset) {
-    console.log(kset);
     return {
         id: kset.id,
         keys: kset.keys,
@@ -52,7 +51,6 @@ function isPositiveKset(kset) {
 module.exports = {
     filterNegativeKsets: function(clientId) {
         winston.info("Filtering ksets with negative keywords for client " + clientId);
-
         return getFilteredKsets(clientId).then(function(ksets) {
             return Promise.filter(ksets , function(kset) {
                 return isPositiveKset(kset);
