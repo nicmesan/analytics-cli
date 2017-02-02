@@ -29,14 +29,14 @@ function getRefreshToken(clientId) {
 
 function setExistingCredentials(clientId) {
     return getAccessToken(clientId).then(function(accessToken)  {
-        return getRefreshToken(clientId).then(function (refreshToken) {
+            return getRefreshToken(accessToken);
+        })
+        .then(function (refreshToken) {
             winston.info('Setting oauth2 credentials');
             return oauth2Client.setCredentials({
-                access_token: accessToken,
                 refresh_token: refreshToken
             });
-        })
-    });
+        });
 }
 
 exports.url = url;
