@@ -12,5 +12,7 @@ Router.post('/google-api/save-all-keywords/:clientId', require('./get-keywords-a
 Router.post('/apply-product-filter/:clientId', require('./apply-product-filter/apply-product-filter').applyProductFilter);
 Router.post('/split-ksets/:clientId', require('./split-ksets/split-ksets').splitKsets);
 Router.post('/filter-negative-keywords/:clientId', require('./filter-negative-keywords/filter-negative-keywords').filterNegativeKeywords);
+Router.post('/filter-stopwords/:clientId', require('./filter-stopwords/filter-stopwords').filterStopwords);
+
 
 exports = module.exports = Router;
