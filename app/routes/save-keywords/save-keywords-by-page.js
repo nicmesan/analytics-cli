@@ -30,6 +30,13 @@ function saveRows(rows) {
     });
 }
 
+function getKeywordValue () {
+    var estimatedCtrs = {
+        1: 0.34,
+
+    }
+}
+
 
 function saveKeywordsByPage (pageId, clientId, next) {
     if (!pageId || !clientId) {

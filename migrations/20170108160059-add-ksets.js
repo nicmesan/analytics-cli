@@ -22,7 +22,8 @@ exports.up = function(db) {
         impressions:  {type: 'int'},
         ctr: { type: 'decimal'},
         position: { type: 'decimal'},
-        pageId : {type: 'int'}
+        pageId : {type: 'int'},
+        keySetValue: {type: 'decimal'}
 
     }).then(function() {
         db.addForeignKey(

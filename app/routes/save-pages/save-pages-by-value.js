@@ -7,6 +7,7 @@ exports.saveTopValuePages = function (req, res) {
     var clientId = req.params.clientId;
     getPages (res, req)
         .then(function (data) {
+            console.log('data')
             var dataToSave = data.reports[0].data.rows;
             if (!dataToSave) {
                 res.status(400).send({ message: 'Client has 0 pages'});

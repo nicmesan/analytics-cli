@@ -29,7 +29,7 @@ function getRefreshToken(clientId) {
 
 function setExistingCredentials(clientId) {
     return getAccessToken(clientId).then(function(accessToken)  {
-            return getRefreshToken(accessToken);
+            return getRefreshToken(clientId);
         })
         .then(function (refreshToken) {
             winston.info('Setting oauth2 credentials');
