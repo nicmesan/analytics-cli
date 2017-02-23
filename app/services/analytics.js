@@ -8,13 +8,15 @@ var winston = require('winston');
 
 exports.getViewIdByClientId = function (clientId) {
     return knex.select('viewId').from('clients').where('id','=', clientId).then(function(res) {
+        if (!res) throw new Error;
         return res[0].viewId;
-    })
+    }).catch(function() {
+        throw new Error('ClientId not found in database');
+    });
 };
 
-exports.fetch = function (viewId, options) {
-
-    options = Object.assign({
+function formatOptions(options) {
+    return Object.assign({
         rows: 10000,
         metrics: [{"expression":"ga:pageviews"}],
         dimensions: [{"name":'ga:pagePath'}],
@@ -23,6 +25,14 @@ exports.fetch = function (viewId, options) {
         orderBys: {},
         segments: []
     }, options);
+}
+
+exports.formatOptions = formatOptions;
+
+exports.fetch = function (viewId, options) {
+
+
+    var formattedOptions = formatOptions(options);
 
     return new Promise(function(resolve, reject) {
         analytics.reports.batchGet({
@@ -37,15 +47,15 @@ exports.fetch = function (viewId, options) {
                             "viewId": viewId,
                             "dateRanges":[
                                 {
-                                    "startDate": options.startDate,
-                                    "endDate": options.endDate
+                                    "startDate": formattedOptions.startDate,
+                                    "endDate": formattedOptions.endDate
                                 }],
-                            "metrics": options.metrics,
-                            "orderBys": options.orderBys,
-                            "segments": options.segments,
-                            "dimensions": options.dimensions,
+                            "metrics": formattedOptions.metrics,
+                            "orderBys": formattedOptions.orderBys,
+                            "segments": formattedOptions.segments,
+                            "dimensions": formattedOptions.dimensions,
                             "samplingLevel":  "LARGE",
-                            "pageSize": options.pageSize,
+                            "pageSize": formattedOptions.pageSize,
                             "includeEmptyRows": true
                         }]
             }
@@ -55,7 +65,7 @@ exports.fetch = function (viewId, options) {
                 winston.error('Error gathering analytics pages', {
                     response: resp,
                     error: err,
-                    options: options
+                    options: formattedOptions
                 });
             } else {
                 resolve(resp)
