@@ -1,5 +1,5 @@
 module.exports = function errorHandler(err, req, res, next) {
     console.log('I the error handler');
     var errorCode = err.code || 500;
-    res.status(500).json({error: err});
+    res.status(errorCode).json({error: err});
 }

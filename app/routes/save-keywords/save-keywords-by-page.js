@@ -4,7 +4,6 @@ var searchConsole = require('../../services/search-console');
 var auth = require('../../services/oauth');
 var knex = require('../../../config/knex');
 
-
 exports.saveKeywords = function (req, res, next) {
     var pageId = req.body.pageId;
     var clientId = req.params.clientId;
