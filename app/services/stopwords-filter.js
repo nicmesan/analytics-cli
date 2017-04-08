@@ -5,7 +5,7 @@ var Promise = require('bluebird');
 //Private
 
 function getWhiteKsets(clientId) {
-    return knex.select('ksets.id','keys','pageId').from('white_ksets').innerJoin('pages', 'ksets.pageId', 'pages.id').where('clientId','=', clientId);
+    return knex.select('id','keys','ksetId').from('white_ksets');
 };
 
 function insertUnstoppedKsets(whiteKsets) {
@@ -32,7 +32,7 @@ function formatKset(kset) {
     return {
         id: kset.id,
         keys: kset.keys,
-        pageId: kset.pageId
+        ksetId: kset.ksetId
     }
 }
 
