@@ -10,6 +10,7 @@ exports.filterStopwords = function (req, res, next) {
                 res.send({ message: 'Negative ksets correctly filtered'})
             })
             .catch(function(err) {
+                console.log(err);
                 next(err);
             });
     };

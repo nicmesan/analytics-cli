@@ -57,7 +57,7 @@ describe('Analytics', function () {
 
             var today = new Date();
             var clock = sinon.useFakeTimers(today.getTime());
-            //Now every time 'Date new()' is called it will return the now variable.
+            //Now every time 'Date new()' in the tested module is called it will return the today variable.
 
             var options = {
                 startRow: 1,

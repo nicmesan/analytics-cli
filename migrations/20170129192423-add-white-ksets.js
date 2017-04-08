@@ -16,7 +16,7 @@ exports.setup = function(options, seedLink) {
 
 exports.up = function(db) {
     return  db.createTable('white_ksets', {
-        id:  { type: 'int' },
+        id:  { type: 'int', primaryKey: true, autoIncrement: true },
         keys: {type: 'string'},
         pageId : {type: 'int'}
     });

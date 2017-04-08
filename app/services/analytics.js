@@ -31,7 +31,6 @@ exports.formatOptions = formatOptions;
 
 exports.fetch = function (viewId, options) {
 
-
     var formattedOptions = formatOptions(options);
 
     return new Promise(function(resolve, reject) {
