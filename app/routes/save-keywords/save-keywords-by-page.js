@@ -30,14 +30,6 @@ function saveRows(rows) {
     });
 }
 
-function getKeywordValue () {
-    var estimatedCtrs = {
-        1: 0.34,
-
-    }
-}
-
-
 function saveKeywordsByPage (pageId, clientId, next) {
     if (!pageId || !clientId) {
         next({message: 'Include page size and client ID'})

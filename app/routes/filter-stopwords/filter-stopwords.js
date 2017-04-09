@@ -7,7 +7,7 @@ exports.filterStopwords = function (req, res, next) {
     } else {
         ksetFilters.filterStopwords(clientId)
             .then(function() {
-                res.send({ message: 'Negative ksets correctly filtered'})
+                res.send({ message: 'Stopwords correctly removed'})
             })
             .catch(function(err) {
                 console.log(err);
