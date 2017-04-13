@@ -3,49 +3,78 @@ var analytics = require('../../services/analytics');
 var auth = require('../../services/oauth');
 var Promise = require('bluebird');
 
-exports.saveTopValuePages = function (req, res) {
+exports.saveTopValuePages = function (req, res, next) {
     var clientId = req.params.clientId;
-    getPages (res, req)
+
+
+    return getPages(req.body.pageSize, req.params.clientId, req.body.orderBy)
         .then(function (data) {
-            console.log('data')
             var dataToSave = data.reports[0].data.rows;
             if (!dataToSave) {
-                res.status(400).send({ message: 'Client has 0 pages'});
+                throw Error('No pages to save');
             }
-            else {
-                dataToSave = dataToSave.map(function(row) {
-                    return formatPageRow(row, clientId);
-                });
-                var pagesToSave = Pages.collections.forge(dataToSave);
-                return pagesToSave.invokeThen('save', null)
-                    .then(function () {
-                        res.status(200).send({ message: dataToSave.length + ' pages successfully saved'});
-                    }, function (error) {
-                        res.status(400).send({ message: 'Data could not be saved in the DB', error : error });
-                    });
-            }
-        }, function (error) {
-            res.status(400).json({message: "Could't fetch data from Analytics", error: error})
+
+            dataToSave = dataToSave.map(function (row) {
+                return formatPageRow(row, clientId);
+            });
+
+            return Pages.collections.forge(dataToSave);
+
         })
-        .catch(function (error) {
-            res.status(500).json({message: "Internal server error ", error: error})
+        .then(function(pagesToSave) {
+
+            return pagesToSave.invokeThen('save', null)
+                .catch(function (error) {
+                    var err = new Error('Data could not be saved in the DB')
+                    err.originalError = error;
+                    throw err
+                });
+        })
+        .then(function (dataToSave) {
+            res.status(200).send({message: dataToSave.length + ' pages successfully saved'});
+        })
+        .catch(function (err) {
+            console.log('save pages cached error', err)
+            next(err);
         })
 };
 
-function getPages (res, req) {
-    var pageSize = req.body.pageSize;
-    var clientId = req.params.clientId;
-    var orderBy = req.body.orderBy;
+function getPages(pageSize, clientId, orderBy) {
 
-    var options = {
+    if (!pageSize || !clientId) {
+        throw Error('Include page size and client ID');
+    }
+
+    var options = getAnalyticsOptions(pageSize, orderBy);
+
+    return analytics.getViewIdByClientId(clientId)
+        .then(function (viewId) {
+            return analytics.fetch(viewId, options)
+        })
+        .catch(function (error) {
+            throw Error("Client ID not found");
+        });
+}
+
+function formatPageRow(row, clientId) {
+    return {
+        pageValue: row.metrics[0].values[0],
+        pagePath: row.dimensions[0],
+        sessions: row.metrics[0].values[1],
+        clientId: clientId
+    }
+}
+
+function getAnalyticsOptions(pageSize, orderBy) {
+    return {
         pageSize: pageSize,
         metrics: [
             {"expression": "ga:pageValue"},
             {"expression": "ga:sessions"}
-            ],
+        ],
         dimensions: [
-            { name: 'ga:pagePath' },
-            { name: "ga:segment" }
+            {name: 'ga:pagePath'},
+            {name: "ga:segment"}
         ],
         orderBys: [
             {
@@ -59,24 +88,4 @@ function getPages (res, req) {
             }
         ]
     };
-
-    if (!pageSize || !clientId) { res.status(400).json({ message: 'Include page size and client ID'})}
-
-    else {
-        return analytics.getViewIdByClientId(clientId)
-            .then(function (viewId) {
-                return analytics.fetch(viewId, options)
-            }, function (error) {
-                res.status(400).json({message: "Client ID not found", error: error})
-            })
-    }
-}
-
-function formatPageRow (row, clientId) {
-    return {
-        pageValue: row.metrics[0].values[0],
-        pagePath: row.dimensions[0],
-        sessions: row.metrics[0].values[1],
-        clientId: clientId
-    }
 }

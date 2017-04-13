@@ -1,5 +1,11 @@
 module.exports = function errorHandler(err, req, res, next) {
+    console.log('middleware error', err)
     console.log('I the error handler');
-    var errorCode = err.code || 500;
-    res.status(500).json({error: err});
+    res.status(500).json({'errorMessage': err.message,
+        'errorName': err.name,
+        'errorStack': err.stack,
+        'errorCode': err.code,
+        'originalError': err.originalError.message,
+        'originalErrorStack': err.originalError.stack
+    });
 }
