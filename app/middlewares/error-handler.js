@@ -1,6 +1,7 @@
-module.exports = function errorHandler(err, req, res, next) {
-    console.log('middleware error', err)
-    console.log('I the error handler');
+var winston = require('winston');
+
+module.exports = function errorHandler(err, req, res) {
+    winston.info(err);
     res.status(500).json({'errorMessage': err.message,
         'errorName': err.name,
         'errorStack': err.stack,
