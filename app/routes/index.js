@@ -5,7 +5,7 @@ var Router = express.Router();
 
 Router.post('/google-api/save-pages/:clientId', require('./../controllers/save-pages-by-value').saveTopValuePages);
 Router.post('/google-api/save-keywords/:clientId', require('./../controllers/save-keywords-by-page').saveKeywords);
-Router.post('/google-api/save-all-keywords/:clientId', require('./../controllers/get_keywords_all_pages').saveAllKeywords);
+Router.post('/google-api/save-all-keywords/:clientId', require('./../controllers/get-keywords-all-pages').saveAllKeywords);
 
 // Other
 
