@@ -1,8 +1,8 @@
-var Ksets = require('../../collections/kset');
+var Ksets = require('../collections/kset');
 var winston = require('winston');
-var searchConsole = require('../../services/search-console');
-var auth = require('../../services/oauth');
-var knex = require('../../../config/knex');
+var searchConsole = require('../integrations/search-console');
+var auth = require('../integrations/oauth');
+var knex = require('../../config/knex');
 
 
 exports.saveKeywords = function (req, res, next) {

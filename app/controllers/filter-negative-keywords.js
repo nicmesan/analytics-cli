@@ -1,4 +1,4 @@
-var ksetFilters = require('../../services/negative-kset-filter');
+var ksetFilters = require('../services/negative-kset-filter');
 
 exports.filterNegativeKeywords = function (req, res, next) {
     var clientId = req.params.clientId;

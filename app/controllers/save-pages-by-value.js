@@ -1,8 +1,8 @@
-var Pages = require('../../collections/pages');
-var analytics = require('../../services/analytics');
-var auth = require('../../services/oauth');
+var Pages = require('../collections/pages');
+var analytics = require('../integrations/analytics');
+var auth = require('../integrations/oauth');
 var Promise = require('bluebird');
-var errors = require('../../errors');
+var errors = require('../errors');
 
 exports.saveTopValuePages = function (req, res, next) {
     var clientId = req.params.clientId;

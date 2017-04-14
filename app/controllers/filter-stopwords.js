@@ -1,4 +1,4 @@
-var ksetFilters = require('../../services/stopwords-filter');
+var ksetFilters = require('../services/stopwords-filter');
 
 exports.filterStopwords = function (req, res, next) {
     var clientId = req.params.clientId;
