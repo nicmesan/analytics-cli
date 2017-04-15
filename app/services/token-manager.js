@@ -4,8 +4,11 @@
 var knex = require('../../config/knex');
 
 function getToken(tokenKey, clientId) {
-    console.log("pego", tokenKey, clientId)
-    return knex.select('token').from('tokens').where('clientId','=', clientId).where('tokenLabel','=',tokenKey).then(function(res) {
+    return knex.select('token').from('tokens').where('clientId','=', clientId).where('tokenLabel','=',tokenKey)
+        .then(function(res) {
+        if (res.length < 1) {
+            throw Error('Client ID not found')
+        }
         return res[0].token;
     });
 }

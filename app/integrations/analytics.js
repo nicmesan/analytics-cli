@@ -8,6 +8,7 @@ var winston = require('winston');
 
 exports.getViewIdByClientId = function (clientId) {
     return knex.select('viewId').from('clients').where('id','=', clientId).then(function(res) {
+        console.log('viewid', res)
         if (!res) throw new Error;
         return res[0].viewId;
     }).catch(function() {

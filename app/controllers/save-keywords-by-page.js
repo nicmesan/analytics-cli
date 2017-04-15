@@ -1,8 +1,8 @@
-var Ksets = require('../../collections/kset');
+var Ksets = require('../collections/kset');
 var winston = require('winston');
-var searchConsole = require('../../services/search-console');
-var auth = require('../../services/oauth');
-var knex = require('../../../config/knex');
+var searchConsole = require('../integrations/search-console');
+var auth = require('../integrations/oauth');
+var knex = require('../../config/knex');
 
 exports.saveKeywords = function (req, res, next) {
     var pageId = req.body.pageId;
@@ -10,7 +10,6 @@ exports.saveKeywords = function (req, res, next) {
 
     saveKeywordsByPage(pageId, clientId, next)
         .then(function (message) {
-            console.log(message);
           if(message) {
             res.status(200).json({message: 'All pages have been saved successfully'})
           }
@@ -28,14 +27,6 @@ function saveRows(rows) {
         console.error(error);
     });
 }
-
-function getKeywordValue () {
-    var estimatedCtrs = {
-        1: 0.34,
-
-    }
-}
-
 
 function saveKeywordsByPage (pageId, clientId, next) {
     if (!pageId || !clientId) {

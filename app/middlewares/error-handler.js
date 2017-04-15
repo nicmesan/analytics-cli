@@ -1,5 +1,21 @@
+var winston = require('winston');
+
 module.exports = function errorHandler(err, req, res, next) {
-    console.log('I the error handler');
-    var errorCode = err.code || 500;
-    res.status(errorCode).json({error: err});
-}
+    winston.info(err);
+
+    var errorToSend = {
+        errorMessage: err.message,
+        errorName: err.name,
+        errorStack: err.stack,
+        errorCode: err.code
+    };
+
+    if (err.originalError) {
+        Object.assign(errorToSend, {
+            originalError: err.originalError.message,
+            originalErrorStack: err.originalError.stack
+        })
+    }
+
+    res.status(400).json(errorToSend);
+};

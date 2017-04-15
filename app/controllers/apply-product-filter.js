@@ -1,4 +1,4 @@
-var productFilter = require('../../services/product-filter')
+var productFilter = require('../services/product-filter')
 
 exports.applyProductFilter = function (req, res) {
     var clientId = req.params.clientId;

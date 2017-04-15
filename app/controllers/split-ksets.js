@@ -1,4 +1,4 @@
-var productFilter = require('../../services/split-ksets');
+var productFilter = require('../services/split-ksets');
 
 exports.splitKsets = function (req, res, next) {
     var clientId = req.params.clientId;

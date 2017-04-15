@@ -19,7 +19,7 @@ function insertUnstoppedKsets(whiteKsets) {
             .then(trx.commit)
             .catch(trx.rollback);
     });
-}
+};
 
 function isStopword(keyword) {
     return knex('stopwords').count('keyword').where('keyword','=',keyword).then(function(result) {
@@ -30,19 +30,26 @@ function isStopword(keyword) {
 
 function formatKset(kset) {
     return {
-        id: kset.id,
         keys: kset.keys,
         ksetId: kset.ksetId
     }
-}
+};
+
+function filterStopwords(keys) {
+    return Promise.filter(keys.split('-'), function(keyword) {
+        return isStopword(keyword);
+    }).then(function (filteredKeywordsArray) {
+        return filteredKeywordsArray.join('-');
+    });
+};
+
 
 function filterStopwordsOnKset(kset) {
-    return Promise.filter(kset.keys.split(' '), function(keyword) {
-       return isStopword(keyword);
-    }).then(function (filteredKeywordsArray) {
-        return filteredKeywordsArray.join(' ');
-    });
-}
+           return filterStopwords(kset.keys).then(function(filteredKeys) {
+               kset.keys = filteredKeys;
+               return kset;
+           });
+};
 
 //Public
 module.exports = {
