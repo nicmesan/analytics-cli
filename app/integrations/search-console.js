@@ -72,7 +72,7 @@ exports.fetch = function (domain, options) {
                     });
                 } else {
                     resolve(resp);
-                    winston.info('Gathered ksets for site' + domain, {});
+                    winston.info('Gathered ksets for site ' + domain, 'page path:', options.filters[0].expression);
                 }
             });
     });

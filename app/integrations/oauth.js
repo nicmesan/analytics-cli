@@ -4,7 +4,6 @@ var OAuth2Client = google.auth.OAuth2;
 var clientSecret = require('../../client_secret.json');
 var oauth2Client = new OAuth2Client(clientSecret.web['client_id'], clientSecret.web['client_secret'], clientSecret.web['redirect_uris'][0]);
 var Promise = require('bluebird');
-var winston = require('winston');
 
 google.options({
     auth: oauth2Client
@@ -30,7 +29,6 @@ function setExistingCredentials(clientId) {
             return getRefreshToken(clientId);
         })
         .then(function (refreshToken) {
-            winston.info('Setting oauth2 credentials');
             return oauth2Client.setCredentials({
                 refresh_token: refreshToken
             });

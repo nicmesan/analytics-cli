@@ -25,7 +25,7 @@ exports.saveKeywordsByPage = function (pageId, clientId) {
             if (dataToSave) {
                 winston.debug(data.rows.length + ' keywords fetched from page id ' + pageId);
                 dataToSave.forEach(function (row) {
-                    row.keys = row.keys[0];
+                    row.keys = row.keys[0].replace(/[^\x20-\x7E]+/g, '');
                     row.pageId = pageId;
                 });
                 return saveRows(dataToSave);
