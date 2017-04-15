@@ -1,27 +1,33 @@
 //Dependencies
-
 var google = require('googleapis');
 var webmasters = google.webmasters('v3');
 var auth = require('./oauth');
 var knex = require('../../config/knex');
 var timeUtils = require('../utils/time_formatter');
 var winston = require('winston');
+var errors = require('../errors');
 
 
 //Methods
 
 exports.getDomainByClientId = function (clientId) {
-    return knex.select('siteName').from('clients').where('id','=', clientId).then(function(res) {
+    return knex.select('siteName').from('clients').where('id', '=', clientId).then(function (res) {
+        if (res.length < 1 || !res[0].siteName) {
+            throw errors.httpError('Domain not found for client ID provided')
+        }
         return res[0].siteName;
     })
 };
 
 exports.getPagePathByPageId = function (pageId) {
-    return knex.select('pagePath').from('pages').where('id','=', pageId).then(function(res) {
-        return res[0].pagePath;
-    })
+    return knex.select('pagePath').from('pages').where('id', '=', pageId)
+        .then(function (res) {
+            if (res.length < 1) {
+                throw errors.httpError('Page ID not found')
+            }
+            return res[0].pagePath;
+        })
 };
-
 
 exports.getFilter = function (dimension, operator, expression) {
     return {
@@ -40,7 +46,7 @@ exports.fetch = function (domain, options) {
         startRow: 0
     }, options);
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         webmasters.searchanalytics.query(
             {
                 'access_token': auth.oauth2Client,

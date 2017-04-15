@@ -4,8 +4,10 @@ var analytics = require('../lib/analytics');
 
 exports.saveTopValuePages = function (req, res, next) {
     var clientId = req.params.clientId;
+    var pageSize = req.body.pageSize;
+    var orderBy = req.body.orderBy;
 
-    return analytics.getPages(req.body.pageSize, req.params.clientId, req.body.orderBy)
+    return analytics.getPages(pageSize, clientId, orderBy)
         .then(function (data) {
             var dataToSave = data.reports[0].data.rows;
             if (!dataToSave) {
