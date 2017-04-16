@@ -3,6 +3,7 @@ var searchConsole = require('../integrations/search-console');
 var knex = require('../../config/knex');
 var Promise = require("bluebird");
 var winston = require('winston');
+var keySetValue = require('../lib/keyset-value');
 
 exports.saveKeySetsByPage = function (pageId, clientId) {
 
@@ -25,8 +26,10 @@ exports.saveKeySetsByPage = function (pageId, clientId) {
             if (dataToSave) {
                 winston.debug(data.rows.length + ' keywords fetched from page id ' + pageId);
                 dataToSave.forEach(function (row) {
+                    console.log(row)
                     row.keys = row.keys[0].replace(/[^\x20-\x7E]+/g, '');
                     row.pageId = pageId;
+                    keySetValue.addKeySetValue(row);
                 });
                 return saveRows(dataToSave);
             } else {
