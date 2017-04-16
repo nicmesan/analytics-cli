@@ -3,7 +3,7 @@ var searchConsole = require('../lib/search-console');
 var Pages = require('../collections/pages');
 var winston = require('winston');
 
-exports.saveAllKeywords = function (req, res, next) {
+exports.saveAllKeySets = function (req, res, next) {
     var clientId = req.params.clientId;
 
     Pages.collections.forge({clientId: clientId})
@@ -23,7 +23,7 @@ exports.saveAllKeywords = function (req, res, next) {
                     pagesBatch.forEach(function(page) {
                         promisesList.push(
                             Promise.delay(i * 1000).then(function() {
-                                return searchConsole.saveKeywordsByPage(page.id, clientId)
+                                return searchConsole.saveKeySetsByPage(page.id, clientId)
                             })
                         );
                     });

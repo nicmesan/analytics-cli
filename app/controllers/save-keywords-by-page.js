@@ -3,13 +3,13 @@ var winston = require('winston');
 var searchConsole = require('../lib/search-console');
 
 
-exports.saveKeywords = function (req, res, next) {
+exports.saveKeySets = function (req, res, next) {
     var pageId = req.body.pageId;
     var clientId = req.params.clientId;
 
-    searchConsole.saveKeywordsByPage(pageId, clientId, next)
-        .then(function (keywordSaved) {
-            if (keywordSaved) {
+    searchConsole.saveKeySetsByPage(pageId, clientId, next)
+        .then(function (keySetSaved) {
+            if (keySetSaved) {
                 winston.info('All keywords for page ID ' + pageId + ' have been saved successfully');
                 res.status(200).json({message: 'All keywords for page ID ' + pageId + ' have been saved successfully'})
             }

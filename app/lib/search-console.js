@@ -4,7 +4,7 @@ var knex = require('../../config/knex');
 var Promise = require("bluebird");
 var winston = require('winston');
 
-exports.saveKeywordsByPage = function (pageId, clientId) {
+exports.saveKeySetsByPage = function (pageId, clientId) {
 
     if (!pageId || !clientId) {
         throw errors.httpError('Include page size and client ID')

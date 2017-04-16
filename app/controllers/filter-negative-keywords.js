@@ -1,6 +1,6 @@
 var ksetFilters = require('../services/negative-kset-filter');
 
-exports.filterNegativeKeywords = function (req, res, next) {
+exports.filterNegativeKeySets = function (req, res, next) {
     var clientId = req.params.clientId;
     if (!clientId) {
         res.status(400).json({message: 'Include client ID'})

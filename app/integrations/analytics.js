@@ -67,8 +67,8 @@ exports.fetch = function (viewId, options) {
                     options: formattedOptions
                 });
             } else {
-                resolve(resp)
-                winston.info('Gathered pages for client', {});
+                resolve(resp);
+                winston.info(resp.reports[0].data.rows.length + ' pages were saved');
             }
         })
     })
