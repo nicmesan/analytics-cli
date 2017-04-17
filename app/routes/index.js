@@ -9,6 +9,7 @@ Router.post('/google-api/save-all-keywords/:clientId', require('./../controllers
 
 // Other
 
+Router.post('/apply-business-filter/:clientId', require('./../controllers/filter-business').applyBusinessFilter);
 Router.post('/apply-product-filter/:clientId', require('./../controllers/apply-product-filter').applyProductFilter);
 Router.post('/split-ksets/:clientId', require('./../controllers/split-ksets').splitKsets);
 Router.post('/filter-negative-keywords/:clientId', require('./../controllers/filter-negative-keywords').filterNegativeKeySets);
