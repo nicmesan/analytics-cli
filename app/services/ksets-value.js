@@ -11,7 +11,10 @@ function insertFilteredKsets (businessFilteredKsets) {
 
     var filteredKsets = [];
     businessFilteredKsets.forEach(function (row) {
-        return filteredKsets.push({ keySetId: row.id });
+        return filteredKsets.push({
+            keySetId: row.id,
+            keys: row.keys
+        });
     });
 
     return knex.transaction(function(trx) {
