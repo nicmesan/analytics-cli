@@ -26,7 +26,6 @@ exports.saveKeySetsByPage = function (pageId, clientId) {
             if (dataToSave) {
                 winston.debug(data.rows.length + ' keywords fetched from page id ' + pageId);
                 dataToSave.forEach(function (row) {
-                    console.log(row)
                     row.keys = row.keys[0].replace(/[^\x20-\x7E]+/g, '');
                     row.pageId = pageId;
                     keySetValue.addKeySetValue(row);

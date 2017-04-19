@@ -7,13 +7,14 @@ function getTopKsets (amount, clientId) {
         .orderBy('keySetValue', 'desc').limit(amount);
 }
 
-function insertFilteredKsets (businessFilteredKsets) {
+function insertFilteredKsets (businessFilteredKsets, clientId) {
 
     var filteredKsets = [];
     businessFilteredKsets.forEach(function (row) {
         return filteredKsets.push({
             keySetId: row.id,
-            keys: row.keys
+            keys: row.keys,
+            clientId: clientId,
         });
     });
 
@@ -33,6 +34,6 @@ exports.saveKsetsToDb = function (amount, clientId) {
                 return null;
             }
 
-            return insertFilteredKsets(topKsets);
+            return insertFilteredKsets(topKsets, clientId);
         })
 };
