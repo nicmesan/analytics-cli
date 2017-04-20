@@ -22,5 +22,3 @@ app.use(errorHandler);
 app.listen(3000, function () {
     winston.info('Server listening on port: ' + port, {});
 });
-
-console.log('test')
