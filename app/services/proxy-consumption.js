@@ -37,6 +37,7 @@ function generateTargetKset(kset, clientData) {
     return {
         fromUrl: generateFromUrl(kset, clientData),
         toUrl: generateToUrl(kset, clientData),
+        keySetId: kset.keySetId,
         clientId: clientData.id
     }
 }
