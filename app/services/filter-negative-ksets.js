@@ -2,16 +2,16 @@ var knex = require("../../config/knex.js");
 var winston = require('winston');
 var Promise = require('bluebird');
 var _ = require('lodash');
-var proxyConsumption = require('./proxyConsumption');
+var proxyConsumption = require('./proxy-consumption');
 
 //Private
 
 function getKsets (clientId) {
-    return knex.select('keys', 'keySetId').from('product_filtered_ksets').where('clientId','=', clientId);
+    return knex.select('kset', 'keySetId').from('product_filtered_ksets').where('clientId','=', clientId);
 }
 
 function getNegativeKeywords (clientId) {
-    return knex.select('keywords').from('negative_keywords').where('clientId','=', clientId);
+    return knex.select('keyword').from('negative_keywords').where('clientId','=', clientId);
 }
 
 function filterNegativeKeywords(ksets, negativeKeywords) {
@@ -21,7 +21,7 @@ function filterNegativeKeywords(ksets, negativeKeywords) {
 }
 
 function isNegativeKset(kset, negativeKeywords) {
-    return (_.intersection(kset.split(' '), negativeKeywords) > 0);
+    return (_.intersection(kset.keys.split(' '), negativeKeywords).length > 0);
 }
 
 exports.filterNegativeKsets = function (clientId) {
@@ -29,7 +29,12 @@ exports.filterNegativeKsets = function (clientId) {
     let ksetsPromise = getKsets(clientId);
 
     return Promise.join(negativeKeywordsPromise, ksetsPromise, (negativeKeywords, ksets) => {
-        let filteredKsets = filterNegativeKeywords(ksets, negativeKeywords);
+
+        var negativeKeywordsVector = _.map(negativeKeywords,function(negativeKeyword) {
+            return negativeKeyword.keyword;
+        });
+
+        let filteredKsets = filterNegativeKeywords(ksets, negativeKeywordsVector);
         return proxyConsumption.prepareForProxyConsumption(filteredKsets, clientId).then(function(targetKsets) {
             return knex.transaction(function(trx) {
                 knex.insert(targetKsets)

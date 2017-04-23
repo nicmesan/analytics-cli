@@ -28,6 +28,7 @@ exports.saveKeySetsByPage = function (pageId, clientId) {
                 dataToSave.forEach(function (row) {
                     row.keys = row.keys[0].replace(/[^\x20-\x7E]+/g, '');
                     row.pageId = pageId;
+                    row.clientId = clientId;
                     keySetValue.addKeySetValue(row);
                 });
                 return saveRows(dataToSave);
