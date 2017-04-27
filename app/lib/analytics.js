@@ -1,4 +1,5 @@
 var analytics = require('../integrations/analytics');
+var errors = require('../errors');
 
 exports.getPages = function (pageSize, clientId, orderBy) {
 

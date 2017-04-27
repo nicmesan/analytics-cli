@@ -20,4 +20,5 @@ db:
     - "3306:3306"
   volumes:
     - ./:/app/
+    - ./config/custom_mysql.cnf:/etc/mysql/conf.d/custom_mysql.cnf
 
