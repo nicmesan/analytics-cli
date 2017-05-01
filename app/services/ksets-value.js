@@ -1,10 +1,10 @@
 var knex = require("../../config/knex.js");
 
 function getTopKsets (amount, clientId) {
-    return knex.select('ksets.id','ksets.keys','ksets.keySetValue')
-        .from('ksets').leftJoin('pages', 'pages.id', 'ksets.pageId')
+    return knex.select('keywords.id','keywords.keyword','keywords.keywordValue')
+        .from('keywords').leftJoin('pages', 'pages.id', 'keywords.pageId')
         .where('pages.clientId','=', clientId)
-        .orderBy('keySetValue', 'desc').limit(amount);
+        .orderBy('keywordValue', 'desc').limit(amount);
 }
 
 function insertFilteredKsets (businessFilteredKsets, clientId) {
@@ -12,15 +12,15 @@ function insertFilteredKsets (businessFilteredKsets, clientId) {
     var filteredKsets = [];
     businessFilteredKsets.forEach(function (row) {
         return filteredKsets.push({
-            keySetId: row.id,
-            keys: row.keys,
+            originalKeywordId: row.id,
+            keyword: row.keyword,
             clientId: clientId,
         });
     });
 
     return knex.transaction(function(trx) {
         knex.insert(filteredKsets)
-            .into('business_filtered_ksets')
+            .into('business_filtered_keywords')
             .transacting(trx)
             .then(trx.commit)
             .catch(trx.rollback);

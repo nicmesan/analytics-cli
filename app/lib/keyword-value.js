@@ -1,7 +1,8 @@
-var BUSSINESS = require('../bussiness_contants');
+let BUSSINESS = require('../bussiness_contants');
 
-function getKeySetValue (keySetPosition, keySetImpressions, maxPosition) {
-    var keySetValue;
+exports.getKeySetValue = function (keySetPosition, keySetImpressions) {
+    let keySetValue;
+    let maxPosition = BUSSINESS.maxPosition || 5;
 
     if (keySetPosition <= maxPosition) {
         keySetValue = -1;
@@ -28,11 +29,4 @@ function getKeySetValue (keySetPosition, keySetImpressions, maxPosition) {
     }
 
     return keySetValue;
-}
-
-exports.addKeySetValue = function (keySetData) {
-
-    var maxPosition = BUSSINESS.maxPosition || 5;
-
-    keySetData.keySetValue = getKeySetValue(keySetData.position, keySetData.impressions, maxPosition )
 };
