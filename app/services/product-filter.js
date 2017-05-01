@@ -3,108 +3,125 @@ let errors = require('../errors');
 let winston = require('winston');
 let Promise = require('bluebird');
 let _ = require('lodash');
-let BUSSINESS = require('../bussiness_contants');
+let BUSINESS = require('../bussiness_contants');
 
-
-function splitKset(kset) {
-    return kset.split(' ');
-}
+// -- Stop words filter
 
 function isStopWord(word, stopWords) {
     return _.includes(stopWords, word)
 }
 
-function removeStopWords(kset, stopWords) {
-    let keyWordsArray = kset.keys.split(' ');
+function removeStopWords(keywordObject, stopWords) {
+    let keyWordsArray = keywordObject.keyword.split(' ');
 
-    let keys = keyWordsArray.filter((word) => {
-        return !isStopWord(word, stopWords)
+    let keywordWithoutStopWords = keyWordsArray.filter((singleWordInKeyword) => {
+        return !isStopWord(singleWordInKeyword, stopWords)
     });
 
     return {
-        'keys': keys,
-        'keySetId': kset.keySetId
+        'keyword': keywordWithoutStopWords,
+        'originalKeywordId': keywordObject.originalKeywordId
     }
 }
 
-function doesKsetExistAsProduct(kset, productKeyWords) {
-    let amountOfCoincidingWords = _.intersection(kset, productKeyWords).length;
-    return amountOfCoincidingWords > kset.length * BUSSINESS.productFilterPrecisionCoef;
-}
-
-function joinNameAndDescription(product) {
-    return _.union(splitKset(product.name), splitKset(product.description))
-}
-
-function filterKsetByProductList(ksetWithoutStopWords, productList) {
-
-    return productList.some((product) => {
-        return doesKsetExistAsProduct(ksetWithoutStopWords, product)
+function filterStopWordsInKeywordsList(keywordsList, stopWords) {
+    return keywordsList.map((keywordObject) => {
+        return removeStopWords(keywordObject, stopWords);
     })
 }
 
-function filterKsetListByProductList(ksetList, productList) {
+// -- Product filter
 
-    let joinedProductList = productList.map(joinNameAndDescription);
+function doesKeywordExistAsProduct (splitKeywordArray, clientId) {
 
-    return ksetList.filter((kset) => {
-        return filterKsetByProductList(kset.keys, joinedProductList)
-    })
+    let keywordsQuery = '';
+    let searchOr = '';
+
+    splitKeywordArray.forEach((singleWordInKeyword) => {
+        keywordsQuery += ` ${searchOr} name LIKE '%${singleWordInKeyword}%' OR description LIKE '%${singleWordInKeyword}%'`;
+        searchOr = 'OR';
+    });
+
+    let databaseQuery = `SELECT * FROM products where clientId = ${clientId} AND (${keywordsQuery})`;
+
+    return knex.raw(databaseQuery)
+        .then((databaseSearchResult) => {
+            return databaseSearchResult[0].length >= BUSINESS.minSearchResultsFilter
+        })
 }
 
-function filterStopWordsInKsetList(ksetList, stopWords) {
-    return ksetList.map((kset) => {
-        return removeStopWords(kset, stopWords);
-    })
+function filterKeywordListByProductList(keywordsList, clientId) {
+
+    let searchProductByKeyword = [];
+
+    keywordsList.forEach((keywordObject) => {
+        searchProductByKeyword.push(doesKeywordExistAsProduct(keywordObject.keyword, clientId));
+    });
+
+
+    return Promise.all(searchProductByKeyword)
+        .then((databaseSearchResult) => {
+            return keywordsList.filter((searchResult, index) => {
+                return databaseSearchResult[index]
+            })
+        });
 }
 
-function formatFilteredKsetsForDatabase(ksetList) {
-    return ksetList.map((kset) => {
+function formatFilteredKeywordsForDatabase(productFilteredKeywordsList) {
+    return productFilteredKeywordsList.map((keywordObject) => {
         return {
-            'kset': kset.keys.join(' '),
-            'keySetId': kset.keySetId
+            'keyword': keywordObject.keyword.join(' '),
+            'originalKeywordId': keywordObject.originalKeywordId
         }
     });
 }
 
+// -- DB Queries
+
 function getStopWords(clientId) {
-    return knex.select('keyword').from('stopwords').where('clientId', '=', clientId);
+    return knex.select('keyword').from('stop_keywords').where('clientId', '=', clientId);
 }
 
-function getKsets(clientId) {
-    return knex.select('keys', 'keySetId').from('business_filtered_ksets').where('clientId', '=', clientId);
+function getKeywords(clientId) {
+    return knex.select('keyword', 'originalKeywordId').from('business_filtered_keywords').where('clientId', '=', clientId);
 }
 
-function getProducts(clientId) {
-    return knex.select('name', 'description').from('products').where('clientId', '=', clientId);
-}
-
-function saveKsets(ksets) {
-    knex.transaction(function (trx) {
-        knex.insert(ksets)
-            .into('product_filtered_ksets')
+function saveKeywords(keywordsObjects) {
+    return knex.transaction(function (trx) {
+        knex.insert(keywordsObjects)
+            .into('product_filtered_keywords')
             .transacting(trx)
             .then(trx.commit)
             .catch(trx.rollback);
     });
 }
 
+// -- Public
+
 exports.applyProductFilter = function (clientId) {
-    let stopWords = getStopWords(clientId);
-    let ksets = getKsets(clientId);
-    let products = getProducts(clientId);
     winston.info('Initializing product filter');
-    return Promise.join(stopWords, ksets, products, (stopWords, ksets, productList) => {
+
+    let stopWords = getStopWords(clientId);
+    let keywordsObject = getKeywords(clientId);
+
+    return Promise.join(stopWords, keywordsObject, products, (stopWords, keywordsObject, productList) => {
         if (stopWords.length === 0) throw Error('No stop words were find in DB');
-        if (ksets.length === 0) throw Error('No ksets were find in DB');
+        if (keywordsObject.length === 0) throw Error('No keywords were find in DB');
         if (productList.length === 0) throw Error('No products were find in DB');
 
         let stopWordsArray = _.map(stopWords, 'keyword');
-        let filteredKsets = filterStopWordsInKsetList(ksets, stopWordsArray);
-        let ksetsFilteredByProducts = filterKsetListByProductList(filteredKsets, productList);
-        let result = formatFilteredKsetsForDatabase(ksetsFilteredByProducts);
 
-        return saveKsets(result)
+        let filteredKeywords = filterStopWordsInKeywordsList(keywordsObject, stopWordsArray);
+
+        return filterKeywordListByProductList(filteredKeywords, clientId)
+            .then((keywordsFilteredByProducts ) => {
+                let result = formatFilteredKeywordsForDatabase(keywordsFilteredByProducts);
+
+                return saveKeywords(result)
+                    .then(() => {
+                        winston.info(`${result.length} keywords successfully saved in DB`);
+                    })
+            })
     })
         .catch((err) => {
             throw errors.httpError('Product filter error', err)
