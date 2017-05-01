@@ -4,7 +4,7 @@
 var dbConfig = {
     client: 'mysql',
     connection: {
-        host     : 'db',
+        host     : 'tarantuladb.cluster-cmcsvwubgzig.us-east-1.rds.amazonaws.com',
         user     : 'tarantula',
         password : 'tarantula',
         database : 'tarantula',
