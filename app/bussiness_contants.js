@@ -1,5 +1,5 @@
 module.exports = {
-    minSearchResultsFilter: 1,
+    minSearchResultsFilter: 3,
     maxRankingFactor: 5
 
 };

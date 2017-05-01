@@ -67,11 +67,12 @@ function filterKeywordListByProductList(keywordsList, clientId) {
         });
 }
 
-function formatFilteredKeywordsForDatabase(productFilteredKeywordsList) {
+function formatFilteredKeywordsForDatabase(productFilteredKeywordsList, clientId) {
     return productFilteredKeywordsList.map((keywordObject) => {
         return {
             'keyword': keywordObject.keyword.join(' '),
-            'originalKeywordId': keywordObject.originalKeywordId
+            'originalKeywordId': keywordObject.originalKeywordId,
+            'clientId': clientId
         }
     });
 }
@@ -104,10 +105,9 @@ exports.applyProductFilter = function (clientId) {
     let stopWords = getStopWords(clientId);
     let keywordsObject = getKeywords(clientId);
 
-    return Promise.join(stopWords, keywordsObject, products, (stopWords, keywordsObject, productList) => {
+    return Promise.join(stopWords, keywordsObject, (stopWords, keywordsObject) => {
         if (stopWords.length === 0) throw Error('No stop words were find in DB');
         if (keywordsObject.length === 0) throw Error('No keywords were find in DB');
-        if (productList.length === 0) throw Error('No products were find in DB');
 
         let stopWordsArray = _.map(stopWords, 'keyword');
 
@@ -115,7 +115,7 @@ exports.applyProductFilter = function (clientId) {
 
         return filterKeywordListByProductList(filteredKeywords, clientId)
             .then((keywordsFilteredByProducts ) => {
-                let result = formatFilteredKeywordsForDatabase(keywordsFilteredByProducts);
+                let result = formatFilteredKeywordsForDatabase(keywordsFilteredByProducts, clientId);
 
                 return saveKeywords(result)
                     .then(() => {

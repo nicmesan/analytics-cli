@@ -1,8 +1,8 @@
-var knex = require("../../config/knex.js");
-var winston = require('winston');
-var Promise = require('bluebird');
-var _ = require('lodash');
-var strategies = require('./strategies');
+let knex = require("../../config/knex.js");
+let winston = require('winston');
+let Promise = require('bluebird');
+let _ = require('lodash');
+let strategies = require('./strategies');
 
 function getClientData (clientId) {
     return knex
@@ -12,7 +12,7 @@ function getClientData (clientId) {
 function generateFromUrl(kset, clientData) {
     switch(clientData.strategy) {
         case 'REPLACE':
-            var options = { separator: clientData.separator };
+            let options = { separator: clientData.separator };
             return strategies.replaceStrategy(kset, options);
         default:
             return strategies.defaultStrategy(kset);
@@ -29,21 +29,21 @@ function generateToUrl(kset, clientData) {
 
 function generateTargetKsets(ksets, clientData) {
     return _.map(ksets, function(kset) {
-        return generateTargetKset(kset, clientData)
+        return generateTargetKeyword(kset, clientData)
     });
 }
 
-function generateTargetKset(kset, clientData) {
+function generateTargetKeyword(keyword, clientData) {
     return {
-        fromUrl: generateFromUrl(kset, clientData),
-        toUrl: generateToUrl(kset, clientData),
-        keySetId: kset.keySetId,
+        fromUrl: generateFromUrl(keyword, clientData),
+        toUrl: generateToUrl(keyword, clientData),
+        originalKeywordId: keyword.originalKeywordId,
         clientId: clientData.id
     }
 }
 
-exports.prepareForProxyConsumption = function prepareForProxyConsumption(ksets, clientId) {
+exports.prepareForProxyConsumption = function prepareForProxyConsumption(keywordsObject, clientId) {
     return getClientData(clientId).then(function(clientData) {
-        return generateTargetKsets(ksets, clientData[0]);
+        return generateTargetKsets(keywordsObject, clientData[0]);
     });
 };

@@ -1,8 +1,8 @@
-exports.replaceStrategy = function (kset, options) {
+exports.replaceStrategy = function (keyword, options) {
     var prefix = options.prefix || '';
     var suffix = options.suffix || '';
 
-    return (prefix + (kset.keys.split(' ').join(options.separator)) + suffix);
+    return (prefix + (keyword.keyword.split(' ').join(options.separator)) + suffix);
 };
 
 exports.defaultStrategy = function (kset) {

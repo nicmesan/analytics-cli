@@ -15,9 +15,9 @@ exports.getKsetsForWidget = function (clientId) {
 };
 
 function getTargetKsets (clientId) {
-    return knex.select('ksets.keys','target_ksets.fromUrl')
-        .from('target_ksets').leftJoin('ksets', 'target_ksets.ksetId', 'ksets.id')
-        .where('target_ksets.clientId','=', clientId)
+    return knex.select('keywords.keyword','target_keywords.fromUrl')
+        .from('target_keywords').leftJoin('keywords', 'target_keywords.originalKeywordId', 'keywords.id')
+        .where('target_keywords.clientId','=', clientId)
         .orderBy(knex.raw('RAND()'))
         .limit(5);
 }
