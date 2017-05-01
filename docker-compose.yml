@@ -11,6 +11,8 @@ analytics-cli:
 
 db:
   image: mysql:5.7
+  volumes:
+      - /conf.d/:/etc/mysql/conf.d
   environment:
     MYSQL_ROOT_PASSWORD: tarantula
     MYSQL_DATABASE: tarantula

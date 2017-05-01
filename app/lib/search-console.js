@@ -3,7 +3,7 @@ var searchConsole = require('../integrations/search-console');
 var knex = require('../../config/knex');
 var Promise = require("bluebird");
 var winston = require('winston');
-var keySetValue = require('../lib/keyset-value');
+var keywordValue = require('./keyword-value');
 
 exports.saveKeySetsByPage = function (pageId, clientId) {
 
@@ -13,8 +13,8 @@ exports.saveKeySetsByPage = function (pageId, clientId) {
 
     else {
         return Promise.join(searchConsole.getPagePathByPageId(pageId), searchConsole.getDomainByClientId(clientId), function (pagePath, domain) {
-            var fullUrl = 'http://' + domain + pagePath;
-            var options = {
+            let fullUrl = 'http://' + domain + pagePath;
+            let options = {
                 startRow: 1,
                 dimensions: ['query'],
                 filters: [searchConsole.getFilter('page', 'equals', fullUrl)]
@@ -22,35 +22,45 @@ exports.saveKeySetsByPage = function (pageId, clientId) {
             return searchConsole.fetch(domain, options)
         })
         .then(function (data) {
-            var dataToSave = data.rows;
+            let dataToSave = data.rows;
             if (dataToSave) {
                 winston.debug(data.rows.length + ' keywords fetched from page id ' + pageId);
-                dataToSave.forEach(function (row) {
-                    row.keys = row.keys[0].replace(/[^\x20-\x7E]+/g, '');
-                    row.pageId = pageId;
-                    row.clientId = clientId;
-                    keySetValue.addKeySetValue(row);
+
+                let formattedKeywords = dataToSave.map((row) => {
+                    return formatRow(row, clientId, pageId)
                 });
-                return saveRows(dataToSave);
+
+                return saveRows(formattedKeywords);
             } else {
                 return null;
             }
 
         })
         .catch(function (err) {
-            throw errors.httpError('Save ksets error', err)
+            throw new errors.keywordSaveError('Save keywords error', err)
         })
     }
 };
 
+function formatRow (row, clientId, pageId) {
+    return {
+        keyword: row.keys[0].replace(/[^\x20-\x7E]+/g, ''),
+        clicks: row.clicks,
+        impressions: row.impressions,
+        ctr: row.ctr,
+        position: row.position,
+        pageId:pageId,
+        keywordValue: keywordValue.getKeySetValue(row.position, row.impressions),
+        clientId: clientId
+    }
+}
+
 function saveRows(rows) {
     return knex.transaction(function (trx) {
         knex.insert(rows)
-            .into('ksets')
+            .into('keywords')
             .transacting(trx)
             .then(trx.commit)
             .catch(trx.rollback);
-    }).catch(function (err) {
-        throw errors.httpError('Data could not be saved in the DB', err)
     });
 }

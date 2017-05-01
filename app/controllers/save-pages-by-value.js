@@ -1,6 +1,7 @@
 var Pages = require('../collections/pages');
 var errors = require('../errors');
 var analytics = require('../lib/analytics');
+let winston = require('winston');
 
 exports.saveTopValuePages = function (req, res, next) {
     var clientId = req.params.clientId;
@@ -29,6 +30,7 @@ exports.saveTopValuePages = function (req, res, next) {
                 });
         })
         .then(function (dataToSave) {
+            winston.info(`${dataToSave.length} were successfully saved in DB`)
             res.status(200).send({message: dataToSave.length + ' pages successfully saved'});
         })
         .catch(function (err) {

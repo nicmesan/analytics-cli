@@ -1,9 +1,9 @@
-var businessFilter = require('../services/ksets-value');
-var winston = require('winston');
+let businessFilter = require('../services/ksets-value');
+let winston = require('winston');
 
 exports.applyBusinessFilter = function (req, res, next) {
-    var keySetsAmount = req.body.keySetsAmount;
-    var clientId = req.params.clientId;
+    let keySetsAmount = req.body.keySetsAmount;
+    let clientId = req.params.clientId;
 
     if (!clientId || !keySetsAmount) {
         res.status(400).json({message: 'Include client ID and keysets amount'})

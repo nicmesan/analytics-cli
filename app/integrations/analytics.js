@@ -68,7 +68,7 @@ exports.fetch = function (viewId, options) {
                 });
             } else {
                 resolve(resp);
-                winston.info(resp.reports[0].data.rows.length + ' pages were saved');
+                winston.info(resp.reports[0].data.rows.length + ' pages were gathered from Analytics');
             }
         })
     })

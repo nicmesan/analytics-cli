@@ -1,4 +1,5 @@
 module.exports = {
-    productFilterPrecisionCoef: 0.5,
+    minSearchResultsFilter: 1,
     maxRankingFactor: 5
+
 };
