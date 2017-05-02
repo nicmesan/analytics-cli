@@ -5,7 +5,7 @@ var Promise = require("bluebird");
 var winston = require('winston');
 var keywordValue = require('./keyword-value');
 
-exports.saveKeySetsByPage = function (pageId, clientId) {
+exports.saveKeywordsByPage = function (pageId, clientId) {
 
     if (!pageId || !clientId) {
         throw errors.httpError('Include page size and client ID')

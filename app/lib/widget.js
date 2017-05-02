@@ -1,20 +1,20 @@
 var errors = require('../errors');
 var knex = require("../../config/knex.js");
 
-exports.getKsetsForWidget = function (clientId) {
+exports.getKeywordsForWidget = function (clientId) {
 
-    return getTargetKsets(clientId)
-        .then((ksets) => {
+    return getTargetKeywords(clientId)
+        .then((keywords) => {
 
-            let result = ksets.map((kset) => {
-                return {anchorText: kset.keys, link: kset.fromUrl}
+            let result = keywords.map((keyword) => {
+                return {anchorText: keyword.keyword, link: keyword.fromUrl}
             });
 
             return result;
         })
 };
 
-function getTargetKsets (clientId) {
+function getTargetKeywords (clientId) {
     return knex.select('keywords.keyword','target_keywords.fromUrl')
         .from('target_keywords').leftJoin('keywords', 'target_keywords.originalKeywordId', 'keywords.id')
         .where('target_keywords.clientId','=', clientId)

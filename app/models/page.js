@@ -1,10 +1,10 @@
 var bookshelf = require('../bookshelf');
-var Kset = require('./kset');
+var Keyword = require('./keyword');
 
 var Page = bookshelf.Model.extend({
     tableName: 'pages',
-    ksets: function() {
-        return this.hasMany(Kset);
+    keywords: function() {
+        return this.hasMany(Keyword);
     }
 });
 

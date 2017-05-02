@@ -6,7 +6,7 @@ let proxyConsumption = require('./proxy-consumption');
 
 //Private
 
-function getKsets(clientId) {
+function getKeywords(clientId) {
     return knex.select('keyword', 'originalKeywordId').from('product_filtered_keywords').where('clientId', '=', clientId);
 }
 
@@ -14,28 +14,28 @@ function getNegativeKeywords(clientId) {
     return knex.select('keyword').from('negative_keywords').where('clientId', '=', clientId);
 }
 
-function filterNegativeKeywords(ksets, negativeKeywords) {
-    return _.filter(ksets, function (kset) {
-        return !isNegativeKset(kset, negativeKeywords);
+function filterNegativeKeywords(keywords, negativeKeywords) {
+    return _.filter(keywords, function (keyword) {
+        return !isNegativeKeywords(keyword, negativeKeywords);
     });
 }
 
-function isNegativeKset(keyword, negativeKeywords) {
+function isNegativeKeywords(keyword, negativeKeywords) {
     return (_.intersection(keyword.keyword.split(' '), negativeKeywords).length > 0);
 }
 
-exports.filterNegativeKsets = function (clientId) {
+exports.filterNegativeKeywords = function (clientId) {
     let negativeKeywordsPromise = getNegativeKeywords(clientId);
-    let ksetsPromise = getKsets(clientId);
+    let keywordsPromise = getKeywords(clientId);
 
-    return Promise.join(negativeKeywordsPromise, ksetsPromise, (negativeKeywords, ksets) => {
+    return Promise.join(negativeKeywordsPromise, keywordsPromise, (negativeKeywords, keywords) => {
 
         let negativeKeywordsVector = _.map(negativeKeywords, function (negativeKeyword) {
             return negativeKeyword.keyword;
         });
 
-        let filteredKsets = filterNegativeKeywords(ksets, negativeKeywordsVector);
-        return proxyConsumption.prepareForProxyConsumption(filteredKsets, clientId)
+        let filteredKeywords = filterNegativeKeywords(keywords, negativeKeywordsVector);
+        return proxyConsumption.prepareForProxyConsumption(filteredKeywords, clientId)
             .then((targetKeywords) => {
                 return knex.transaction(function (trx) {
                     knex.insert(targetKeywords)

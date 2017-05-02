@@ -9,10 +9,10 @@ function deleteAllRecordsFromTable (tableName, clientId) {
 module.exports = function(clientId) {
     var tables = [
         'pages',
-        'ksets',
-        'product_filtered_ksets',
-        'business_filtered_ksets',
-        'target_ksets'];
+        'keywords',
+        'product_filtered_keywords',
+        'business_filtered_keywords',
+        'target_keywords'];
 
     return Promise.all(tables.map(function(tableName) {
         return deleteAllRecordsFromTable(tableName, clientId);

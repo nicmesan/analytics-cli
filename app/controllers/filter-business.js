@@ -1,16 +1,16 @@
-let businessFilter = require('../services/ksets-value');
+let businessFilter = require('../services/keywords-value');
 let winston = require('winston');
 
 exports.applyBusinessFilter = function (req, res, next) {
-    let keySetsAmount = req.body.keySetsAmount;
+    let keywordsAmount = req.body.keywordsAmount;
     let clientId = req.params.clientId;
 
-    if (!clientId || !keySetsAmount) {
+    if (!clientId || !keywordsAmount) {
         res.status(400).json({message: 'Include client ID and keysets amount'})
     }
 
     else {
-        return businessFilter.saveKsetsToDb(keySetsAmount, clientId)
+        return businessFilter.saveKeywordsToDb(keywordsAmount, clientId)
             .then(function(result) {
                 if (!result) {
                     winston.info("There were no keywords available to save");

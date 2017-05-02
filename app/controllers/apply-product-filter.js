@@ -11,8 +11,8 @@ exports.applyProductFilter = function (req, res, next) {
     else {
         productFilter.applyProductFilter(clientId)
             .then(function() {
-                winston.info('Saved product filtered ksets');
-                res.status(200).json({ message: 'Target ksets correctly generated'})
+                winston.info('Saved product filtered keywords');
+                res.status(200).json({ message: 'Target keywords correctly generated'})
             })
             .catch(function (err) {
                 next(err)

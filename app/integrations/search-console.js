@@ -65,14 +65,14 @@ exports.fetch = function (domain, options) {
             }, function (err, resp) {
                 if (err) {
                     reject(err);
-                    winston.error('Error gathering ksets for site ' + domain, {
+                    winston.error('Error gathering keywords for site ' + domain, {
                         response: resp,
                         error: err,
                         options: options
                     });
                 } else {
                     resolve(resp);
-                    winston.info('Gathered ksets for site ' + domain, 'page path:', options.filters[0].expression);
+                    winston.info('Gathered keywords for site ' + domain, 'page path:', options.filters[0].expression);
                 }
             });
     });

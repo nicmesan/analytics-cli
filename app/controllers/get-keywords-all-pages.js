@@ -24,7 +24,7 @@ exports.saveAllKeySets = function (req, res, next) {
                     pagesBatch.forEach(function (page) {
                         promisesList.push(
                             Promise.delay(i * 1500).then(function () {
-                                return searchConsole.saveKeySetsByPage(page.id, clientId)
+                                return searchConsole.saveKeywordsByPage(page.id, clientId)
                             })
                         );
                     });

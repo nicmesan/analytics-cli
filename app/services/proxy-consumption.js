@@ -9,27 +9,27 @@ function getClientData (clientId) {
         .select('id', 'mainDomain', 'searchDomain', 'searchUrlPrefix', 'searchUrlSuffix', 'strategy', 'separator')
         .from('clients').where('id','=', clientId);
 }
-function generateFromUrl(kset, clientData) {
+function generateFromUrl(keyword, clientData) {
     switch(clientData.strategy) {
         case 'REPLACE':
             let options = { separator: clientData.separator };
-            return strategies.replaceStrategy(kset, options);
+            return strategies.replaceStrategy(keyword, options);
         default:
-            return strategies.defaultStrategy(kset);
+            return strategies.defaultStrategy(keyword);
     }
 }
 
-function generateToUrl(kset, clientData) {
-    return strategies.replaceStrategy(kset, {
+function generateToUrl(keyword, clientData) {
+    return strategies.replaceStrategy(keyword, {
         separator: '-',
         prefix: clientData.searchUrlPrefix,
         suffix: clientData.searchUrlSuffix
     });
 }
 
-function generateTargetKsets(ksets, clientData) {
-    return _.map(ksets, function(kset) {
-        return generateTargetKeyword(kset, clientData)
+function generateTargetKeywords(keywords, clientData) {
+    return _.map(keywords, function(keyword) {
+        return generateTargetKeyword(keyword, clientData)
     });
 }
 
@@ -44,6 +44,6 @@ function generateTargetKeyword(keyword, clientData) {
 
 exports.prepareForProxyConsumption = function prepareForProxyConsumption(keywordsObject, clientId) {
     return getClientData(clientId).then(function(clientData) {
-        return generateTargetKsets(keywordsObject, clientData[0]);
+        return generateTargetKeywords(keywordsObject, clientData[0]);
     });
 };
