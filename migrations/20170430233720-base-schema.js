@@ -51,11 +51,13 @@ exports.up = function (db) {
 
     dbActions.push(db.createTable('pages', {
         id: {type: 'int', primaryKey: true, autoIncrement: true},
-        pagePath: {type: 'string'},
+        pagePath: {type: 'string', unique: true},
         pageValue: {type: 'decimal'},
         sessions: {type: 'int'},
         clientId: {type: 'int'},
-    }));
+    })
+
+    );
 
     dbActions.push(db.createTable('products', {
         id: {type: 'int', primaryKey: true, autoIncrement: true},
