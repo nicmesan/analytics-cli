@@ -1,11 +1,67 @@
 let knex = require("../../config/knex.js");
 let winston = require('winston');
 let Promise = require('bluebird');
-let _ = require('lodash');
-let proxyConsumption = require('./proxy-consumption');
+let Queue = require('promise-queue');
+let baseEquivalenceQuery = require('../queries/insert-base-equivalence-classes');
 
 //Private
 
-module.exports = function (clientId) {
-    return Promise.resolve(true);
+function registerBaseEquivalenceClasses() {
+    winston.info("Registering base equivalence classes");
+    return knex.raw(baseEquivalenceQuery)
+        .then(function () {
+            winston.info("Base equivalence classes where registered OK");
+        }).catch(function (err) {
+            winston.error("There was an error inserting base equivalence classes", err);
+            throw Error("There was an error inserting base equivalence classes", err);
+        });
 };
+
+function getNthEquivalenceClass(n) {
+    return knex.select('*').from('product_match_equivalence_classes').then(function (result) {
+        return result[0]
+    });
+}
+
+function evaluateNthEquivalenceClass(n, amountOfEquivalenceClasses) {
+
+    getNthEquivalenceClass(n).then(function(eqClass) {
+
+        var startFrom = n + 1;
+        var comparisonPromisesList = [];
+
+        for (var i = startFrom; (i < amountOfEquivalenceClasses); i++) {
+            comparisonPromisesList.push(_.partial(compare, eqClass, i);
+        }
+    })
+
+
+}
+
+function getAmountOfEquivalenceClasses() {
+    return knex.select('count(*)').from('product_match_equivalence_classes').then(function (result) {
+        return result[0]
+    });
+}
+
+
+module.exports = function (clientId) {
+
+    winston.info("Initiating keyord similarity filter");
+
+    //Must return below promise once debugged and working.
+    registerBaseEquivalenceClasses()
+        .then(function () {
+            return getAmountOfEquivalenceClasses()
+        })
+        .then(function (amountOfEquivalenceClasses) {
+            var promiseList = [];
+            for (i = 0; i < amountOfEquivalenceClasses; i++) {
+                promiseList.push(_.partial(evaluateNthEquivalenceClass, i, amountOfEquivalenceClasses));
+            }
+        });
+
+    return Promise.resolve(1); //Placeholder
+
+};
+
