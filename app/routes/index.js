@@ -13,6 +13,8 @@ Router.post('/apply-business-filter/:clientId', require('./../controllers/filter
 Router.post('/apply-product-filter/:clientId', require('./../controllers/apply-product-filter').applyProductFilter);
 Router.post('/filter-negative-keywords/:clientId', require('./../controllers/filter-negative-keywords').filterNegativeKeywords);
 Router.post('/table-cleanup/:clientId', require('./../controllers/table-cleanup').tableCleanup);
+Router.post('/apply-keyword-similarity-filter/:clientId', require('./../controllers/keyword-similarity-filter').filterSimilarKeywords);
+
 
 // Widget
 

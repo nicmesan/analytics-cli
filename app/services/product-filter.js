@@ -51,20 +51,22 @@ function doesKeywordExistAsProduct(keywordObject, clientId) {
             return databaseSearchResult[0]
         })
         .tap(function (searchResults) {
-            searchResults.forEach(function(product){
-                knex.transaction(function (trx) {
-                    knex.insert({
-                        productId: product.id,
-                        originalKeywordId: keywordObject.originalKeywordId,
-                        clientId: clientId,
-                        businessFilteredKeywordId: keywordObject.id
-                    })
-                        .into('business_filtered_keywords_products')
-                        .transacting(trx)
-                        .then(trx.commit)
-                        .catch(trx.rollback);
-                });
-            })
+            if (searchResults.length >= BUSINESS.minSearchResultsFilter) {
+                searchResults.forEach(function(product){
+                    knex.transaction(function (trx) {
+                        knex.insert({
+                            productId: product.id,
+                            originalKeywordId: keywordObject.originalKeywordId,
+                            clientId: clientId,
+                            businessFilteredKeywordId: keywordObject.id
+                        })
+                            .into('business_filtered_keywords_products')
+                            .transacting(trx)
+                            .then(trx.commit)
+                            .catch(trx.rollback);
+                    });
+                })
+            }
 
         })
         .then(function (searchResults) {
