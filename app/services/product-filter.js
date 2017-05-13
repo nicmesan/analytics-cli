@@ -82,7 +82,10 @@ function filterKeywordListByProductList(keywordsList, clientId) {
         searchProductByKeyword.push(doesKeywordExistAsProduct(keywordObject, clientId));
     });
 
-
+    // return Promise.all(keywordsList.map((keywordObject, index) => {
+    //
+    //     return dbLimitConnections(() => doesKeywordExistAsProduct(keywordObject, clientId, index))
+    // }))
     return Promise.all(searchProductByKeyword)
         .then((databaseSearchResult) => {
             return keywordsList.filter((searchResult, index) => {

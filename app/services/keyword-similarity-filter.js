@@ -50,7 +50,7 @@ module.exports = function (clientId) {
             return getAmountOfEquivalenceClasses()
         })
         .then(function (amountOfEquivalenceClasses) {
-            var promiseList = [];
+            let promiseList = [];
             for (i = 0; i < amountOfEquivalenceClasses; i++) {
                 promiseList.push(_.partial(evaluateNthEquivalenceClass, i, amountOfEquivalenceClasses));
             }
