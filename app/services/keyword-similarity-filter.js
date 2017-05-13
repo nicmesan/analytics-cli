@@ -25,14 +25,9 @@ function getNthEquivalenceClass(n) {
 
 function evaluateNthEquivalenceClass(n, amountOfEquivalenceClasses) {
 
-    getNthEquivalenceClass(n).then(function(eqClass) {
+    return getNthEquivalenceClass(n).then(function(eqClass) {
 
-        var startFrom = n + 1;
-        var comparisonPromisesList = [];
-
-        for (var i = startFrom; (i < amountOfEquivalenceClasses); i++) {
-            comparisonPromisesList.push(_.partial(compare, eqClass, i);
-        }
+            //Implement comparison
     })
 
 
