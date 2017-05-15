@@ -1,9 +1,10 @@
-let knex = require("../../config/knex.js");
-let errors = require('../errors');
-let winston = require('winston');
-let Promise = require('bluebird');
-let _ = require('lodash');
-let BUSINESS = require('../bussiness_contants');
+const knex = require("../../config/knex.js");
+const errors = require('../errors');
+const winston = require('winston');
+const Promise = require('bluebird');
+const _ = require('lodash');
+const BUSINESS = require('../bussiness_contants');
+const promiseLimit = require('promise-limit')
 
 // -- Stop words filter
 
@@ -33,7 +34,7 @@ function filterStopWordsInKeywordsList(keywordsList, stopWords) {
 
 // -- Product filter
 
-function doesKeywordExistAsProduct(keywordObject, clientId) {
+function doesKeywordExistAsProduct(keywordObject, clientId, index) {
 
     let keywordsQuery = '';
     let searchOr = '';
@@ -45,48 +46,45 @@ function doesKeywordExistAsProduct(keywordObject, clientId) {
     });
 
     let databaseQuery = `SELECT * FROM products where clientId = ${clientId} AND (${keywordsQuery})`;
-
+    console.log('empieza ', index);
     return knex.raw(databaseQuery)
         .then((databaseSearchResult) => {
             return databaseSearchResult[0]
         })
-        .tap(function (searchResults) {
-            if (searchResults.length >= BUSINESS.minSearchResultsFilter) {
-                searchResults.forEach(function(product){
-                    knex.transaction(function (trx) {
-                        knex.insert({
-                            productId: product.id,
-                            originalKeywordId: keywordObject.originalKeywordId,
-                            clientId: clientId,
-                            businessFilteredKeywordId: keywordObject.id
-                        })
-                            .into('business_filtered_keywords_products')
-                            .transacting(trx)
-                            .then(trx.commit)
-                            .catch(trx.rollback);
-                    });
-                })
-            }
-
-        })
+        // .tap(function (searchResults) {
+        //     if (searchResults.length >= BUSINESS.minSearchResultsFilter) {
+        //         searchResults.forEach(function(product){
+        //             knex.transaction(function (trx) {
+        //                 knex.insert({
+        //                     productId: product.id,
+        //                     originalKeywordId: keywordObject.originalKeywordId,
+        //                     clientId: clientId,
+        //                     businessFilteredKeywordId: keywordObject.id
+        //                 })
+        //                     .into('business_filtered_keywords_products')
+        //                     .transacting(trx)
+        //                     .then(trx.commit)
+        //                     .catch(trx.rollback);
+        //             });
+        //         })
+        //     }
+        //
+        // })
         .then(function (searchResults) {
+          console.log('paso', index)
             return searchResults.length >= BUSINESS.minSearchResultsFilter;
+
         });
 }
 
 function filterKeywordListByProductList(keywordsList, clientId) {
 
-    let searchProductByKeyword = [];
+    var limit = promiseLimit(BUSINESS.maxConnectionsAllowedToDB);
 
-    keywordsList.forEach((keywordObject) => {
-        searchProductByKeyword.push(doesKeywordExistAsProduct(keywordObject, clientId));
-    });
+    return Promise.all(keywordsList.map((keywordObject, index) => {
 
-    // return Promise.all(keywordsList.map((keywordObject, index) => {
-    //
-    //     return dbLimitConnections(() => doesKeywordExistAsProduct(keywordObject, clientId, index))
-    // }))
-    return Promise.all(searchProductByKeyword)
+        return limit(() => doesKeywordExistAsProduct(keywordObject, clientId, index))
+    }))
         .then((databaseSearchResult) => {
             return keywordsList.filter((searchResult, index) => {
                 return databaseSearchResult[index]

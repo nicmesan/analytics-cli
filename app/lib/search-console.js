@@ -45,8 +45,11 @@ exports.saveKeywordsByPage = function (pageId, clientId) {
 };
 
 function formatRow (row, clientId, pageId) {
+    console.log(row.keys[0])
+    console.log(typeof row.keys[0])
+
     return {
-        keyword: row.keys[0].replace(/[^\x20-\x7E]+/g, ''),
+        keyword: row.keys[0].toString(),
         clicks: row.clicks,
         impressions: row.impressions,
         ctr: row.ctr,
