@@ -20,7 +20,8 @@ exports.up = function (db) {
         id: {type: 'int', primaryKey: true, autoIncrement: true},
         originalKeywordId: {type: 'int'},
         matchedProducts: {type: 'string'},
-        keywordValue: {type: 'int'}
+        keywordValue: {type: 'int'},
+        processStatus: {type: 'string', defaultValue: 'unprocessed'}
     });
 
 };
