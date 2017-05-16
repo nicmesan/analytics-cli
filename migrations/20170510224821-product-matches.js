@@ -16,7 +16,7 @@ exports.setup = function (options, seedLink) {
 
 exports.up = function (db) {
 
-    return db.createTable('business_filtered_keywords_products', {
+    return db.createTable('product_matches', {
         id: {type: 'int', primaryKey: true, autoIncrement: true},
         productId: {type: 'int'},
         originalKeywordId: {type: 'int'},
@@ -28,7 +28,7 @@ exports.up = function (db) {
 
 exports.down = function (db) {
 
-    return db.dropTable('business_filtered_keywords_products');
+    return db.dropTable('product_matches');
 };
 
 exports._meta = {
