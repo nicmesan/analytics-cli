@@ -1,5 +1,5 @@
 module.exports = {
-    minSearchResultsFilter: 30,
+    minSearchResultsFilter: 1,
     maxRankingFactor: 5,
     maxConnectionsAllowedToDB: 20
 };

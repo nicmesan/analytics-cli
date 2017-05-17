@@ -16,7 +16,7 @@ exports.setup = function (options, seedLink) {
 
 exports.up = function (db) {
 
-    return db.createTable('product_match_equivalence_classes', {
+    return db.createTable('unique_product_matches', {
         id: {type: 'int', primaryKey: true, autoIncrement: true},
         originalKeywordId: {type: 'int'},
         matchedProducts: {type: 'string'},
@@ -28,7 +28,7 @@ exports.up = function (db) {
 
 exports.down = function (db) {
 
-    return db.dropTable('product_match_equivalence_classes');
+    return db.dropTable('unique_product_matches');
 };
 
 exports._meta = {

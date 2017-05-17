@@ -46,33 +46,34 @@ function doesKeywordExistAsProduct(keywordObject, clientId, index) {
     });
 
     let databaseQuery = `SELECT * FROM products where clientId = ${clientId} AND (${keywordsQuery})`;
-    console.log('empieza ', index);
     return knex.raw(databaseQuery)
         .then((databaseSearchResult) => {
             return databaseSearchResult[0]
         })
-        // .tap(function (searchResults) {
-        //     if (searchResults.length >= BUSINESS.minSearchResultsFilter) {
-        //         searchResults.forEach(function(product){
-        //             knex.transaction(function (trx) {
-        //                 knex.insert({
-        //                     productId: product.id,
-        //                     originalKeywordId: keywordObject.originalKeywordId,
-        //                     clientId: clientId,
-        //                     businessFilteredKeywordId: keywordObject.id
-        //                 })
-        //                     .into('business_filtered_keywords_products')
-        //                     .transacting(trx)
-        //                     .then(trx.commit)
-        //                     .catch(trx.rollback);
-        //             });
-        //         })
-        //     }
-        //
-        // })
+        .tap(function (searchResults) {
+            if (searchResults.length >= BUSINESS.minSearchResultsFilter) {
+                searchResults.forEach(function (product) {
+                    knex.transaction(function (trx) {
+                        knex.insert({
+                            productId: product.id,
+                            originalKeywordId: keywordObject.originalKeywordId,
+                            clientId: clientId,
+                            businessFilteredKeywordId: keywordObject.id
+                        })
+                            .into('product_matches')
+                            .transacting(trx)
+                            .then(trx.commit)
+                            .catch(trx.rollback);
+                    });
+                })
+            }
+
+        })
         .then(function (searchResults) {
-          console.log('paso', index)
-            return searchResults.length >= BUSINESS.minSearchResultsFilter;
+            var matches = (searchResults.length >= BUSINESS.minSearchResultsFilter);
+            var message = matches ? 'CONTINUES' : 'FILTERED';
+            console.log('Keyword matches analized for product ' + index + '. Found ' + searchResults.length + ' matches (max:' + BUSINESS.minSearchResultsFilter + '). - ' + message + '.');
+            return matches;
 
         });
 }
