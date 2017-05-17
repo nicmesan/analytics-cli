@@ -58,7 +58,7 @@ function doesKeywordExistAsProduct(keywordObject, clientId, index) {
                             productId: product.id,
                             originalKeywordId: keywordObject.originalKeywordId,
                             clientId: clientId,
-                            businessFilteredKeywordId: keywordObject.id
+                            businessFilteredKeywordId: keywordObject.id,
                         })
                             .into('product_matches')
                             .transacting(trx)

@@ -16,19 +16,18 @@ exports.setup = function (options, seedLink) {
 
 exports.up = function (db) {
 
-    return db.createTable('unique_product_matches', {
-        id: {type: 'int', primaryKey: true, autoIncrement: true},
+    return db.createTable('product_matches_final_classes', {
         originalKeywordId: {type: 'int'},
-        matchedProducts: {type: 'string'},
         keywordValue: {type: 'int'},
-        processStatus: {type: 'string', defaultValue: 'unprocessed'}
+        clientId: {type: 'int'}
+
     });
 
 };
 
 exports.down = function (db) {
 
-    return db.dropTable('unique_product_matches');
+    return db.dropTable('product_matches_final_classes');
 };
 
 exports._meta = {
