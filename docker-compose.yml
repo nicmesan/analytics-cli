@@ -1,6 +1,6 @@
 analytics-cli:
   build: .
-  command: nodemon server
+  command: nodemon server --legacy-watch
   ports:
     - "3000:3000"
   volumes:
