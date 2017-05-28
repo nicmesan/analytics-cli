@@ -7,7 +7,7 @@ let proxyConsumption = require('./proxy-consumption');
 //Private
 
 function getKeywords(clientId) {
-    return knex.select('keyword', 'originalKeywordId').from('product_filtered_keywords').where('clientId', '=', clientId);
+    return knex.select('keyword', 'originalKeywordId').from('product_matches_final_classes').where('clientId', '=', clientId);
 }
 
 function getNegativeKeywords(clientId) {

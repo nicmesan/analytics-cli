@@ -18,7 +18,7 @@ exports.up = function (db) {
 
     return db.createTable('product_matches_grouped_unique', {
         originalKeywordId: {type: 'int'},
-        productMatchVector: {type: 'string'},
+        productMatchVector: {type: 'text'},
         clientId: {type: 'int'},
         keywordValue: {type: 'int'}
     });

@@ -19,6 +19,7 @@ exports.up = function (db) {
     return db.createTable('product_matches_final_classes', {
         originalKeywordId: {type: 'int'},
         keywordValue: {type: 'int'},
+        keyword: {type: 'string'},
         clientId: {type: 'int'}
 
     });
