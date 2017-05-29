@@ -1,4 +1,4 @@
-INSERT INTO tarantula.clients (name, siteName, viewId, mainDomain, searchUrlPrefix, searchUrlSuffix, searchDomain, strategy, `separator`) VALUES ('Vivi Saludable', 'vivisaludable.com', 'ga:89286882', 'vivisaludable.com', '?q=', null, 'articulos.vivisaludable.com', 'SEPARATOR', '+');
+INSERT INTO tarantula.clients (name, siteName, viewId, mainDomain, searchUrlPrefix, searchUrlSuffix, searchDomain, strategy, `separator`) VALUES ('Vivi Saludable', 'vivisaludable.com', 'ga:89286882', 'vivisaludable.com', '?s=', null, 'articulos.vivisaludable.com', 'SEPARATOR', '+');
 
 INSERT INTO products (name, description, clientId)
 VALUES ('Receta paleo para desayunos','Cuando comenca practicar la [td_block_ad_box spot_id="custom_ad_4"]','1'),
