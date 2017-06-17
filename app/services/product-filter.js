@@ -1,9 +1,10 @@
-let knex = require("../../config/knex.js");
-let errors = require('../errors');
-let winston = require('winston');
-let Promise = require('bluebird');
-let _ = require('lodash');
-let BUSINESS = require('../bussiness_contants');
+const knex = require("../../config/knex.js");
+const errors = require('../errors');
+const winston = require('winston');
+const Promise = require('bluebird');
+const _ = require('lodash');
+const BUSINESS = require('../bussiness_contants');
+const promiseLimit = require('promise-limit')
 
 // -- Stop words filter
 
@@ -20,7 +21,8 @@ function removeStopWords(keywordObject, stopWords) {
 
     return {
         'keyword': keywordWithoutStopWords,
-        'originalKeywordId': keywordObject.originalKeywordId
+        'originalKeywordId': keywordObject.originalKeywordId,
+        'id': keywordObject.id,
     }
 }
 
@@ -32,10 +34,11 @@ function filterStopWordsInKeywordsList(keywordsList, stopWords) {
 
 // -- Product filter
 
-function doesKeywordExistAsProduct (splitKeywordArray, clientId) {
+function doesKeywordExistAsProduct(keywordObject, clientId, index) {
 
     let keywordsQuery = '';
     let searchOr = '';
+    let splitKeywordArray = keywordObject.keyword;
 
     splitKeywordArray.forEach((singleWordInKeyword) => {
         keywordsQuery += ` ${searchOr} name LIKE '%${singleWordInKeyword}%' OR description LIKE '%${singleWordInKeyword}%'`;
@@ -43,23 +46,46 @@ function doesKeywordExistAsProduct (splitKeywordArray, clientId) {
     });
 
     let databaseQuery = `SELECT * FROM products where clientId = ${clientId} AND (${keywordsQuery})`;
-
     return knex.raw(databaseQuery)
         .then((databaseSearchResult) => {
-            return databaseSearchResult[0].length >= BUSINESS.minSearchResultsFilter
+            return databaseSearchResult[0]
         })
+        .tap(function (searchResults) {
+            if (searchResults.length >= BUSINESS.minSearchResultsFilter) {
+                searchResults.forEach(function (product) {
+                    knex.transaction(function (trx) {
+                        knex.insert({
+                            productId: product.id,
+                            originalKeywordId: keywordObject.originalKeywordId,
+                            clientId: clientId,
+                            businessFilteredKeywordId: keywordObject.id,
+                        })
+                            .into('product_matches')
+                            .transacting(trx)
+                            .then(trx.commit)
+                            .catch(trx.rollback);
+                    });
+                })
+            }
+
+        })
+        .then(function (searchResults) {
+            var matches = (searchResults.length >= BUSINESS.minSearchResultsFilter);
+            var message = matches ? 'CONTINUES' : 'FILTERED';
+            console.log('Keyword matches analized for product ' + index + '. Found ' + searchResults.length + ' matches (max:' + BUSINESS.minSearchResultsFilter + '). - ' + message + '.');
+            return matches;
+
+        });
 }
 
 function filterKeywordListByProductList(keywordsList, clientId) {
 
-    let searchProductByKeyword = [];
+    var limit = promiseLimit(BUSINESS.maxConnectionsAllowedToDB);
 
-    keywordsList.forEach((keywordObject) => {
-        searchProductByKeyword.push(doesKeywordExistAsProduct(keywordObject.keyword, clientId));
-    });
+    return Promise.all(keywordsList.map((keywordObject, index) => {
 
-
-    return Promise.all(searchProductByKeyword)
+        return limit(() => doesKeywordExistAsProduct(keywordObject, clientId, index))
+    }))
         .then((databaseSearchResult) => {
             return keywordsList.filter((searchResult, index) => {
                 return databaseSearchResult[index]
@@ -67,11 +93,12 @@ function filterKeywordListByProductList(keywordsList, clientId) {
         });
 }
 
-function formatFilteredKeywordsForDatabase(productFilteredKeywordsList) {
+function formatFilteredKeywordsForDatabase(productFilteredKeywordsList, clientId) {
     return productFilteredKeywordsList.map((keywordObject) => {
         return {
             'keyword': keywordObject.keyword.join(' '),
-            'originalKeywordId': keywordObject.originalKeywordId
+            'originalKeywordId': keywordObject.originalKeywordId,
+            'clientId': clientId
         }
     });
 }
@@ -83,7 +110,7 @@ function getStopWords(clientId) {
 }
 
 function getKeywords(clientId) {
-    return knex.select('keyword', 'originalKeywordId').from('business_filtered_keywords').where('clientId', '=', clientId);
+    return knex.select('id', 'keyword', 'originalKeywordId').from('business_filtered_keywords').where('clientId', '=', clientId);
 }
 
 function saveKeywords(keywordsObjects) {
@@ -104,18 +131,17 @@ exports.applyProductFilter = function (clientId) {
     let stopWords = getStopWords(clientId);
     let keywordsObject = getKeywords(clientId);
 
-    return Promise.join(stopWords, keywordsObject, products, (stopWords, keywordsObject, productList) => {
+    return Promise.join(stopWords, keywordsObject, (stopWords, keywordsObject) => {
         if (stopWords.length === 0) throw Error('No stop words were find in DB');
         if (keywordsObject.length === 0) throw Error('No keywords were find in DB');
-        if (productList.length === 0) throw Error('No products were find in DB');
 
         let stopWordsArray = _.map(stopWords, 'keyword');
 
         let filteredKeywords = filterStopWordsInKeywordsList(keywordsObject, stopWordsArray);
 
         return filterKeywordListByProductList(filteredKeywords, clientId)
-            .then((keywordsFilteredByProducts ) => {
-                let result = formatFilteredKeywordsForDatabase(keywordsFilteredByProducts);
+            .then((keywordsFilteredByProducts) => {
+                let result = formatFilteredKeywordsForDatabase(keywordsFilteredByProducts, clientId);
 
                 return saveKeywords(result)
                     .then(() => {

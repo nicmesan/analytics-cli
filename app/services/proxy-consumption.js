@@ -1,49 +1,49 @@
-var knex = require("../../config/knex.js");
-var winston = require('winston');
-var Promise = require('bluebird');
-var _ = require('lodash');
-var strategies = require('./strategies');
+let knex = require("../../config/knex.js");
+let winston = require('winston');
+let Promise = require('bluebird');
+let _ = require('lodash');
+let strategies = require('./strategies');
 
 function getClientData (clientId) {
     return knex
         .select('id', 'mainDomain', 'searchDomain', 'searchUrlPrefix', 'searchUrlSuffix', 'strategy', 'separator')
         .from('clients').where('id','=', clientId);
 }
-function generateFromUrl(kset, clientData) {
+function generateFromUrl(keyword, clientData) {
     switch(clientData.strategy) {
         case 'REPLACE':
-            var options = { separator: clientData.separator };
-            return strategies.replaceStrategy(kset, options);
+            let options = { separator: clientData.separator };
+            return strategies.replaceStrategy(keyword, options);
         default:
-            return strategies.defaultStrategy(kset);
+            return strategies.defaultStrategy(keyword);
     }
 }
 
-function generateToUrl(kset, clientData) {
-    return strategies.replaceStrategy(kset, {
+function generateToUrl(keyword, clientData) {
+    return strategies.replaceStrategy(keyword, {
         separator: '-',
         prefix: clientData.searchUrlPrefix,
         suffix: clientData.searchUrlSuffix
     });
 }
 
-function generateTargetKsets(ksets, clientData) {
-    return _.map(ksets, function(kset) {
-        return generateTargetKset(kset, clientData)
+function generateTargetKeywords(keywords, clientData) {
+    return _.map(keywords, function(keyword) {
+        return generateTargetKeyword(keyword, clientData)
     });
 }
 
-function generateTargetKset(kset, clientData) {
+function generateTargetKeyword(keyword, clientData) {
     return {
-        fromUrl: generateFromUrl(kset, clientData),
-        toUrl: generateToUrl(kset, clientData),
-        keySetId: kset.keySetId,
+        fromUrl: generateFromUrl(keyword, clientData),
+        toUrl: generateToUrl(keyword, clientData),
+        originalKeywordId: keyword.originalKeywordId,
         clientId: clientData.id
     }
 }
 
-exports.prepareForProxyConsumption = function prepareForProxyConsumption(ksets, clientId) {
+exports.prepareForProxyConsumption = function prepareForProxyConsumption(keywordsObject, clientId) {
     return getClientData(clientId).then(function(clientData) {
-        return generateTargetKsets(ksets, clientData[0]);
+        return generateTargetKeywords(keywordsObject, clientData[0]);
     });
 };

@@ -1,6 +1,6 @@
 var bookshelf = require('../bookshelf');
-var kset = require('../models/kset');
+var keyword = require('../models/keyword');
 
 exports.collections = bookshelf.Collection.extend({
-    model: kset
+    model: keyword
 });

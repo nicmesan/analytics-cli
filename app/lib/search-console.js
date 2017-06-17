@@ -1,11 +1,12 @@
-var errors = require('../errors');
-var searchConsole = require('../integrations/search-console');
-var knex = require('../../config/knex');
-var Promise = require("bluebird");
-var winston = require('winston');
-var keywordValue = require('./keyword-value');
+const errors = require('../errors');
+const searchConsole = require('../integrations/search-console');
+const knex = require('../../config/knex');
+const Promise = require("bluebird");
+const winston = require('winston');
+const keywordValue = require('./keyword-value');
+const insertOrReplace = require('../utils/upsert');
 
-exports.saveKeySetsByPage = function (pageId, clientId) {
+exports.saveKeywordsByPage = function (pageId, clientId) {
 
     if (!pageId || !clientId) {
         throw errors.httpError('Include page size and client ID')
@@ -30,21 +31,23 @@ exports.saveKeySetsByPage = function (pageId, clientId) {
                     return formatRow(row, clientId, pageId)
                 });
 
-                return saveRows(formattedKeywords);
+                return insertOrReplace(formattedKeywords, 'keywords', 'keyword');
             } else {
                 return null;
             }
 
         })
         .catch(function (err) {
+            winston.info('Error saving page keywords', err);
             throw new errors.keywordSaveError('Save keywords error', err)
         })
     }
 };
 
 function formatRow (row, clientId, pageId) {
+
     return {
-        keyword: row.keys[0].replace(/[^\x20-\x7E]+/g, ''),
+        keyword: row.keys[0],
         clicks: row.clicks,
         impressions: row.impressions,
         ctr: row.ctr,
