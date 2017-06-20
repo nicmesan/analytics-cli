@@ -21,7 +21,7 @@ function generateFromUrl(keyword, clientData) {
 
 function generateToUrl(keyword, clientData) {
     return strategies.replaceStrategy(keyword, {
-        separator: '-',
+        separator: '+',
         prefix: clientData.searchUrlPrefix,
         suffix: clientData.searchUrlSuffix
     });
