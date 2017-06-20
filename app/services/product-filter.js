@@ -41,8 +41,8 @@ function doesKeywordExistAsProduct(keywordObject, clientId, index) {
     let splitKeywordArray = keywordObject.keyword;
 
     splitKeywordArray.forEach((singleWordInKeyword) => {
-        keywordsQuery += ` ${searchOr} name LIKE '%${singleWordInKeyword}%' OR description LIKE '%${singleWordInKeyword}%'`;
-        searchOr = 'OR';
+        keywordsQuery += `${searchOr} (name LIKE '%${singleWordInKeyword}%' OR description LIKE '%${singleWordInKeyword}%')`;
+        searchOr = 'AND';
     });
 
     let databaseQuery = `SELECT * FROM products where clientId = ${clientId} AND (${keywordsQuery})`;
@@ -72,7 +72,7 @@ function doesKeywordExistAsProduct(keywordObject, clientId, index) {
         .then(function (searchResults) {
             var matches = (searchResults.length >= BUSINESS.minSearchResultsFilter);
             var message = matches ? 'CONTINUES' : 'FILTERED';
-            console.log('Keyword matches analized for product ' + index + '. Found ' + searchResults.length + ' matches (max:' + BUSINESS.minSearchResultsFilter + '). - ' + message + '.');
+            console.log('Keyword matches analized for business_filtered_keyword ' + index + '. Found ' + searchResults.length + ' matches (max:' + BUSINESS.minSearchResultsFilter + '). - ' + message + '.');
             return matches;
 
         });
