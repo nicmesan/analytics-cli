@@ -35,8 +35,8 @@ function generateTargetKeywords(keywords, clientData) {
 
 function generateTargetKeyword(keyword, clientData) {
     return {
-        fromUrl: clientData.mainDomain + generateFromUrl(keyword, clientData),
-        toUrl: clientData.searchDomain + generateToUrl(keyword, clientData),
+        fromUrl: generateFromUrl(keyword, clientData),
+        toUrl: 'https://' + clientData.searchDomain + generateToUrl(keyword, clientData),
         originalKeywordId: keyword.originalKeywordId,
         clientId: clientData.id
     }
