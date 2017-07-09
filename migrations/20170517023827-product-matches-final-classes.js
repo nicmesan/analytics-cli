@@ -21,7 +21,6 @@ exports.up = function (db) {
         keywordValue: {type: 'int'},
         keyword: {type: 'string'},
         clientId: {type: 'int'}
-
     });
 
 };
