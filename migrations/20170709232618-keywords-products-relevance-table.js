@@ -18,7 +18,7 @@ exports.up = function(db) {
     return db.createTable('keywords_products_relevance', {
         id: {type: 'int', primaryKey: true, autoIncrement: true},
         postTitle: {type: 'string'},
-        score: {type: 'decimal'},
+        score: {type: 'decimal', length: '10,6'},
         originalKeywordId: {type: 'int'},
     })
 };
