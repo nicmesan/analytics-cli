@@ -1,8 +1,18 @@
-let knex = require("../../config/knex.js");
+//let knex = require("../../config/knex.js");
+let client = require("../../config/elasticsearch");
 
 module.exports = function insertOrReplace(data, table, constraint) {
 
-    let insert = knex(table).insert(data);
+
+    return Promise.all(data, (document) => {
+        client.index({
+            index: 'tarantula',
+            type: 'pages',
+            body: document
+        });
+    });
+
+    /*let insert = knex(table).insert(data);
     let update = '';
 
     for (let column in data[0]) {
@@ -15,5 +25,5 @@ module.exports = function insertOrReplace(data, table, constraint) {
 
     let query = `${insert.toString()} ON DUPLICATE KEY UPDATE ${formattedUpdate};`;
 
-    return knex.raw(query);
+    return knex.raw(query);*/
 };
