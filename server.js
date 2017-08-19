@@ -18,6 +18,11 @@ const port = process.env.PORT || 3000;
 const app = express();
 const Routes = require('./app/routes');
 
+let client = require("./config/elasticsearch");
+
+
+
+
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(requestLogger);
 app.use(cors);

@@ -31,8 +31,9 @@ exports.saveKeywordsByPage = function (pageId, clientId) {
                     return formatRow(row, clientId, pageId)
                 });
 
-                return insertOrReplace(formattedKeywords, 'keywords', 'keyword');
+                return insertOrReplace(formattedKeywords, 'keywords');
             } else {
+                winston.info('No keywords! (0) keywords fetched from page id ' + pageId);
                 return null;
             }
 

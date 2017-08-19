@@ -1,14 +1,21 @@
 //let knex = require("../../config/knex.js");
 let client = require("../../config/elasticsearch");
 
-module.exports = function insertOrReplace(data, table, constraint) {
+module.exports = function insertOrReplace(data, type) {
+
+    winston.info("starting insert into ES", type);
 
 
     return Promise.all(data, (document) => {
-        client.index({
+        return client.index({
             index: 'tarantula',
-            type: 'pages',
+            type: type,
             body: document
+        }).then((resp) => {
+            winston.info("inserted into ES", resp);
+            return "ok";
+        }).catch((err) => {
+            winston.info("error inserting into ES", err);
         });
     });
 

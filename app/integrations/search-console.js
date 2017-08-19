@@ -46,12 +46,18 @@ exports.fetch = function (domain, options) {
         startRow: 0
     }, options);
 
+    winston.info("Values!");
+    winston.info(auth.oauth2Client);
+    winston.info(domain);
+    winston.info(options);
+
+
     return new Promise(function (resolve, reject) {
         webmasters.searchanalytics.query(
             {
                 'access_token': auth.oauth2Client,
                 'siteUrl': domain,
-                'fields': 'responseAggregationType,rows',
+                'fields': 'rows',
                 'resource': {
                     'startDate': options.startDate,
                     'endDate': options.endDate,
@@ -73,6 +79,7 @@ exports.fetch = function (domain, options) {
                 } else {
                     resolve(resp);
                     winston.info('Gathered keywords for site ' + domain, 'page path:', options.filters[0].expression);
+                    winston.info('Response was', resp);
                 }
             });
     });

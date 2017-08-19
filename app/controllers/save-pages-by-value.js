@@ -20,7 +20,7 @@ exports.saveTopValuePages = function (req, res, next) {
             dataToSave = dataToSave.map(function (row) {
                 return formatPageRow(row, clientId);
             });
-            return insertOrReplace(dataToSave, 'pages', 'pagePath')
+            return insertOrReplace(dataToSave, 'pages')
                 .catch(function (error) {
                     throw errors.httpError('Data could not be saved in the DB', error);
                 });
