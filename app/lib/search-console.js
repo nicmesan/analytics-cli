@@ -6,34 +6,28 @@ const winston = require('winston');
 const keywordValue = require('./keyword-value');
 const insertOrReplace = require('../utils/upsert');
 
-exports.saveKeywordsByPage = function (pageId, clientId) {
+exports.saveKeywordsByPage = function (pageData, clientData) {
 
-    if (!pageId || !clientId) {
-        throw errors.httpError('Include page size and client ID')
-    }
+    let fullUrl = 'https://' + pageData.pagePath;
+    let options = {
+        startRow: 1,
+        dimensions: ['query'],
+        filters: [searchConsole.getFilter('page', 'equals', fullUrl)]
+    };
 
-    else {
-        return Promise.join(searchConsole.getPagePathByPageId(pageId), searchConsole.getDomainByClientId(clientId), function (pagePath, domain) {
-            let fullUrl = 'http://' + domain + pagePath;
-            let options = {
-                startRow: 1,
-                dimensions: ['query'],
-                filters: [searchConsole.getFilter('page', 'equals', fullUrl)]
-            };
-            return searchConsole.fetch(domain, options)
-        })
+    return searchConsole.fetch(clientData.siteName, options)
         .then(function (data) {
             let dataToSave = data.rows;
             if (dataToSave) {
-                winston.debug(data.rows.length + ' keywords fetched from page id ' + pageId);
+                winston.info(data.rows.length + ' keywords fetched from page \'' + pageData.pagePath + '\'');
 
                 let formattedKeywords = dataToSave.map((row) => {
-                    return formatRow(row, clientId, pageId)
+                    return formatRow(row, clientData.id, pageData.pagePath)
                 });
 
                 return insertOrReplace(formattedKeywords, 'keywords');
             } else {
-                winston.info('No keywords! (0) keywords fetched from page id ' + pageId);
+                winston.info('No keywords! (0) keywords fetched from page \'' + pageData.pagePath + '\'');
                 return null;
             }
 
@@ -42,10 +36,9 @@ exports.saveKeywordsByPage = function (pageId, clientId) {
             winston.info('Error saving page keywords', err);
             throw new errors.keywordSaveError('Save keywords error', err)
         })
-    }
 };
 
-function formatRow (row, clientId, pageId) {
+function formatRow(row, clientId, pagePath) {
 
     return {
         keyword: row.keys[0],
@@ -53,18 +46,8 @@ function formatRow (row, clientId, pageId) {
         impressions: row.impressions,
         ctr: row.ctr,
         position: row.position,
-        pageId:pageId,
+        page: pagePath,
         keywordValue: keywordValue.getKeySetValue(row.position, row.impressions),
         clientId: clientId
     }
-}
-
-function saveRows(rows) {
-    return knex.transaction(function (trx) {
-        knex.insert(rows)
-            .into('keywords')
-            .transacting(trx)
-            .then(trx.commit)
-            .catch(trx.rollback);
-    });
 }
