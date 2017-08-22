@@ -10,12 +10,12 @@ module.exports = function (clientId, type, body) {
                     match_all: {}
                 },
                 from : 0,
-                size : 100,
+                size : 2,
             }
         }, function (error, response) {
             if (error) {
                 console.log("Elasticsearch error: " + error);
-                reject(err);
+                reject(error);
             }
             else {
                 console.log("Found records in ES for type " + type + ". Got " + response.hits.hits.length + " hits.");

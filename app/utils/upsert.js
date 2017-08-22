@@ -1,4 +1,3 @@
-//let knex = require("../../config/knex.js");
 let client = require("../../config/elasticsearch");
 let Promise = require("bluebird");
 let winston = require("winston");
