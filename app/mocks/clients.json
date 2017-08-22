@@ -1,0 +1,18 @@
+{
+  "clients": [
+    {
+      "vivisaludable": {
+        "id": 1,
+        "name": "Vivi Saludable",
+        "siteName": "vivisaludable.com",
+        "viewId": "ga:89286882",
+        "mainDomain": "vivisaludable.com",
+        "searchDomain": "articulos.vivisaludable.com",
+        "searchUrlPrefix": "?s=",
+        "searchUrlSuffix": null,
+        "strategy": "SEPARATOR",
+        "separator": "+"
+      }
+    }
+  ]
+}

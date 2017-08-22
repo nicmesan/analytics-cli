@@ -4,6 +4,7 @@ let winston = require('winston');
 let errors = require('../errors');
 let searchEs = require('../utils/search-es');
 let knex = require('../../config/knex');
+let validator = require('../utils/required-parameter-validator');
 
 function getPagesData(clientId) {
     var body = {
@@ -25,9 +26,11 @@ function getClientData(clientId) {
 
 
 module.exports = function (req, res, next) {
-    let clientId = req.params.clientId;
-    let pagesProcessed;
 
+    let clientId = req.params.clientId;
+    validator.validateRequiredParameters({clientId: clientId});
+
+    let pagesProcessed;
     let getClientDataPromise = getClientData(clientId);
 
     return Promise.join(getClientDataPromise, getPagesData(clientId), function (clientData, pages)

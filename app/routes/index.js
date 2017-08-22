@@ -8,7 +8,7 @@ Router.post('/google-api/save-keywords/:clientId', require('./../controllers/sav
 
 // Filters
 
-Router.post('/save-client', require('./../controllers/save-client'));
+Router.post('/save-client/:clientKey', require('./../controllers/save-client'));
 
 //Router.post('/apply-business-filter/:clientId', require('./../controllers/filter-business').applyBusinessFilter);
 //Router.post('/apply-product-filter/:clientId', require('./../controllers/apply-product-filter').applyProductFilter);

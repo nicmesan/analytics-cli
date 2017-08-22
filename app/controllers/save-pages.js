@@ -4,7 +4,7 @@ const winston = require('winston');
 const knex = require("../../config/knex.js");
 const util = require('util');
 const insertOrReplace = require('../utils/upsert');
-
+let validator = require('../utils/required-parameter-validator');
 
 function formatPageRow(row, clientId) {
     return {
@@ -19,6 +19,11 @@ module.exports = function (req, res, next) {
     let clientId = req.params.clientId;
     let pageSize = req.body.pageSize;
     let orderBy = req.body.orderBy;
+
+    validator.validateRequiredParameters({
+        clientId: clientId,
+        pageSize: pageSize,
+    });
 
     return analytics.getPages(pageSize, clientId, orderBy)
         .then(function (data) {
