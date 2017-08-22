@@ -26,8 +26,10 @@ exports.saveTopValuePages = function (req, res, next) {
                 });
         })
         .then(function (dataSaved) {
-            winston.info(`${dataSaved[0].affectedRows} were successfully saved/updated in DB`)
-            res.status(200).send({message: dataSaved[0].affectedRows + ' were successfully saved/updated in DB'});
+
+            var message = pageSize + ' pages were successfully saved/updated in DB';
+            winston.info(message);
+            res.status(200).send({message: message});
         })
         .catch(function (err) {
             next(err);

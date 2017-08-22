@@ -1,6 +1,8 @@
 //let knex = require("../../config/knex.js");
 let client = require("../../config/elasticsearch");
 let Promise = require("bluebird");
+let winston = require("winston");
+
 module.exports = function insertOrReplace(data, type) {
 
     var bulkActions = [];
@@ -18,7 +20,7 @@ module.exports = function insertOrReplace(data, type) {
             if (err) {
                 reject(err);
             };
-            console.log('Inserted ' + data.length + ' documents into type \''+ type +'\' in elasticsearch');
+            winston.info('Inserted ' + data.length + ' documents into type \''+ type +'\' in elasticsearch');
             resolve(data.length);
         });
     });

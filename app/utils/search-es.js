@@ -9,6 +9,8 @@ module.exports = function (clientId, type, body) {
                 query: {
                     match_all: {}
                 },
+                from : 0,
+                size : 100,
             }
         }, function (error, response) {
             if (error) {

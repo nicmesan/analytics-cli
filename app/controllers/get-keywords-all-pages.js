@@ -70,7 +70,7 @@ exports.saveAllKeySets = function (req, res, next) {
 
                         if (rejectedPromises.length < 1) {
                             winston.info("Keywords correctly saved");
-                            res.status(200).json({message: "Keywords correctly saved"})
+                            res.status(200).json({message: "Keywords were correctly saved"})
                         }
 
                         else {
