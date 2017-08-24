@@ -5,7 +5,7 @@ let _ = require('lodash');
 
 module.exports = function insertOrReplace(data, type) {
 
-    data = _.isObject(data) ? [data] : data;
+    data = _.isArray(data) ? data : [data];
 
     var bulkActions = [];
     var bulkActionObject = {index: {_index: 'tarantula', _type: type}};
@@ -20,6 +20,7 @@ module.exports = function insertOrReplace(data, type) {
             body: bulkActions
         }, function (err, resp) {
             if (err) {
+                winston.error('Error inserting documents into type \''+ type +'\' in elasticsearch', err);
                 reject(err);
             };
             winston.info('Inserted ' + data.length + ' documents into type \''+ type +'\' in elasticsearch');

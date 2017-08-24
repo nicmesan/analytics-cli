@@ -8,8 +8,9 @@ module.exports = function (req, res, next) {
     let clientKey = req.params.clientKey;
     validator.validateRequiredParameters({clientKey: clientKey});
     var searchedClient = _.find(clients.clients, clientKey)[clientKey];
+
     return esInsert(searchedClient, 'clients')
-        .then((result) => {
+        .then(() => {
             winston.info('Client was successfully saved', searchedClient);
             res.status(200).json({message: "Client was inserted successfully", client: searchedClient});
         })

@@ -1,17 +1,18 @@
-/**
- * Created by javieranselmi on 1/11/17.
- */
-var knex = require('../../config/knex');
+let searchEs = require('../utils/search-es');
 
-function getToken(tokenKey, clientId) {
-    return knex.select('token').from('tokens').where('clientId','=', clientId).where('tokenLabel','=',tokenKey)
-        .then(function(res) {
-        if (res.length < 1) {
-            throw Error('Client ID not found')
-        }
-        return res[0].token;
-    });
+function getToken(tokenKey, clientKey) {
+    var body = {
+        query: {
+            match: {
+                clientKey: clientKey
+            }
+        },
+    };
+    return searchEs(clientKey, 'clients', body).then((clientData))
 }
+
+
+
 
 //TODO: implement setToken function
 //TODO: relate token to a user/site

@@ -10,6 +10,7 @@ const cors = require('./app/middlewares/cors');
 var bodyParser = require('body-parser');
 var errorHandler = require('./app/middlewares/error-handler');
 var setCredentials = require('./app/middlewares/set-credentials-middleware');
+var clientContext = require('./app/middlewares/client-context');
 
 
 const models = join(__dirname, 'app/models');
@@ -23,10 +24,14 @@ let client = require("./config/elasticsearch");
 
 
 
-app.use(bodyParser.json({ type: 'application/json' }));
+
 app.use(requestLogger);
+app.use(bodyParser.json({ type: 'application/json' }));
 app.use(cors);
+app.use('/save-client/:clientKey', require('./app/controllers/save-client'));
+app.use(clientContext);
 app.use('/google-api/*/:clientId', setCredentials);
+
 app.use(Routes);
 app.use(errorHandler);
 app.listen(3000, function () {

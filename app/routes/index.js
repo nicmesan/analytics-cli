@@ -3,12 +3,10 @@ var Router = express.Router();
 
 // google API
 
-Router.post('/google-api/save-pages/:clientId', require('./../controllers/save-pages'));
-Router.post('/google-api/save-keywords/:clientId', require('./../controllers/save-keywords'));
+Router.post('/google-api/save-pages/', require('./../controllers/save-pages'));
+Router.post('/google-api/save-keywords/', require('./../controllers/save-keywords'));
 
 // Filters
-
-Router.post('/save-client/:clientKey', require('./../controllers/save-client'));
 
 //Router.post('/apply-business-filter/:clientId', require('./../controllers/filter-business').applyBusinessFilter);
 //Router.post('/apply-product-filter/:clientId', require('./../controllers/apply-product-filter').applyProductFilter);

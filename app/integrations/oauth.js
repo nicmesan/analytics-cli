@@ -14,25 +14,13 @@ var url = oauth2Client.generateAuthUrl({
     scope: ['https://www.googleapis.com/auth/analytics', 'https://www.googleapis.com/auth/webmasters.readonly']
 });
 
-function getAccessToken(clientId) {
-    return tokenManager.getToken('googleApiAccessToken', clientId)
-        .then(function(data) {
-    })
-}
-
-function getRefreshToken(clientId) {
-    return Promise.resolve(tokenManager.getToken('googleApiRefreshToken', clientId));
-}
-
-function setExistingCredentials(clientId) {
-    return getAccessToken(clientId).then(function(accessToken)  {
-            return getRefreshToken(clientId);
-        })
-        .then(function (refreshToken) {
-            return oauth2Client.setCredentials({
-                refresh_token: refreshToken
-            });
+function setExistingCredentials(refreshToken) {
+    return new Promise((resolve, reject) => {
+        oauth2Client.setCredentials({
+            refresh_token: refreshToken
         });
+        resolve();
+    });
 }
 
 exports.url = url;

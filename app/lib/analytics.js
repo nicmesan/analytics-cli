@@ -1,18 +1,11 @@
 var analytics = require('../integrations/analytics');
 var errors = require('../errors');
 
-exports.getPages = function (pageSize, clientId, orderBy) {
-
-    if (!pageSize || !clientId) {
-        throw errors.httpError('Include page size and client ID');
-    }
+exports.getPages = function (pageSize, viewId, orderBy) {
 
     var options = getAnalyticsOptions(pageSize, orderBy);
 
-    return analytics.getViewIdByClientId(clientId)
-        .then(function (viewId) {
-            return analytics.fetch(viewId, options)
-        })
+    return analytics.fetch(viewId, options)
         .catch(function (error) {
             throw errors.httpError("Get pages error", error);
         });

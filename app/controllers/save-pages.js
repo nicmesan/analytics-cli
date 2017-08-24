@@ -6,41 +6,44 @@ const util = require('util');
 const insertOrReplace = require('../utils/upsert');
 let validator = require('../utils/required-parameter-validator');
 
-function formatPageRow(row, clientId) {
+function formatPageRow(row, clientKey) {
     return {
         pageValue: row.metrics[0].values[0],
         pagePath: row.dimensions[0],
         sessions: row.metrics[0].values[1],
-        clientId: clientId
+        clientKey: clientKey
     }
 }
 
 module.exports = function (req, res, next) {
-    let clientId = req.params.clientId;
+
     let pageSize = req.body.pageSize;
     let orderBy = req.body.orderBy;
+    let viewId = req.context.clientData.viewId;
+    let clientKey = req.context.clientData.clientKey;
 
     validator.validateRequiredParameters({
-        clientId: clientId,
         pageSize: pageSize,
     });
 
-    return analytics.getPages(pageSize, clientId, orderBy)
+    return analytics.getPages(pageSize, viewId, orderBy)
         .then(function (data) {
+
             let dataToSave = data.reports[0].data.rows;
             if (!dataToSave) {
                 throw errors.httpError('No pages to save');
             }
 
             dataToSave = dataToSave.map(function (row) {
-                return formatPageRow(row, clientId);
+                return formatPageRow(row, clientKey);
             });
+
             return insertOrReplace(dataToSave, 'pages')
                 .catch(function (error) {
                     throw errors.httpError('Data could not be saved in the DB', error);
                 });
         })
-        .then(function (dataSaved) {
+        .then(function () {
 
             var message = pageSize + ' pages were successfully saved/updated in DB';
             winston.info(message);

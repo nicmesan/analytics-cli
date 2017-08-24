@@ -7,16 +7,6 @@ var Promise = require('bluebird');
 var winston = require('winston');
 
 
-//This function is out of place here, should be fed with all client Data
-exports.getViewIdByClientId = function (clientId) {
-    return knex.select('viewId').from('clients').where('id','=', clientId).then(function(res) {
-        if (!res) throw new Error;
-        return res[0].viewId;
-    }).catch(function() {
-        throw new Error('ClientId not found in database');
-    });
-};
-
 function formatOptions(options) {
     return Object.assign({
         rows: 10000,
