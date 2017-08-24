@@ -39,6 +39,8 @@ module.exports = function (req, res, next) {
 
                 pagesBatch.forEach(function (page) {
                     promisesList.push(
+                        // Quota: 5 Queries Per Second
+                        // Quota: 200 Queries Per Minute
                         Promise.delay(i/5 * 1500).then(function () {
                             return searchConsole.saveKeywordsByPage(page, clientData)
                         })
