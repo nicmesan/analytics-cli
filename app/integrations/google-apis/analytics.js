@@ -1,11 +1,10 @@
 var google = require('googleapis');
 var analytics = google.analyticsreporting('v4');
-var auth = require('./oauth');
-var knex = require('../../config/knex');
-var timeUtils = require('../utils/time_formatter');
 var Promise = require('bluebird');
 var winston = require('winston');
-var errors = require('../errors');
+var auth = require('./oauth');
+var timeUtils = require('../../utils/time_formatter');
+var errors = require('../../errors');
 
 function getPages(pageSize, viewId, orderBy) {
     var options = getAnalyticsOptions(pageSize, orderBy);

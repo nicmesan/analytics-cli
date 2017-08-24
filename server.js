@@ -9,7 +9,7 @@ const requestLogger = require('./app/middlewares/request-logger');
 const cors = require('./app/middlewares/cors');
 var bodyParser = require('body-parser');
 var errorHandler = require('./app/middlewares/error-handler');
-var setCredentials = require('./app/middlewares/set-credentials-middleware');
+var setCredentials = require('./app/middlewares/set-credentials');
 var clientContext = require('./app/middlewares/client-context');
 
 

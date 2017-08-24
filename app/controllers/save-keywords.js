@@ -1,5 +1,5 @@
 let Promise = require('bluebird');
-let searchConsole = require('../lib/search-console');
+let searchConsole = require('../integrations/google-apis/search-console');
 let winston = require('winston');
 let errors = require('../errors');
 let searchEs = require('../utils/search-es');

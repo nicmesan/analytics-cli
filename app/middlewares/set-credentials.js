@@ -1,4 +1,4 @@
-var oauth = require('../integrations/oauth');
+var oauth = require('../integrations/google-apis/oauth');
 var winston = require('winston');
 
 
