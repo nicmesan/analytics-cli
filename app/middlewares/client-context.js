@@ -42,7 +42,6 @@ function getClientData(req, res, next) {
 
     try {
         localClientsData = require('../mocks/clients.json');
-        console.log(localClientsData);
         var clientData = _.find(localClientsData.clients,clientKey);
         if (!clientData) {
             throw new Error("Client data was not found locally");
@@ -53,7 +52,6 @@ function getClientData(req, res, next) {
             next();
         }
     } catch(err) {
-        console.log(err);
         return getClientDataFromDatabase(clientKey)
             .then((clientData) => {
                 winston.info("Client data was found from database and added to context");

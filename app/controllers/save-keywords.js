@@ -22,8 +22,6 @@ module.exports = function (req, res, next) {
     let clientData = req.context.clientData;
     let pagesProcessed;
 
-    return res.status(200).json(clientData);
-
     return getPagesData(clientKey).then((pages) => {
 
         if (pages.length < 1) {
