@@ -7,7 +7,7 @@ let winston = require('winston');
 let errors = require('../../errors');
 let Promise = require("bluebird");
 let keywordValue = require('../../lib/keyword-value');
-let insertOrReplace = require('../../utils/upsert');
+let elasticsearch = require('../elasticsearch');
 
 //Methods
 
@@ -91,7 +91,7 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
                     return formatRow(row, clientData.id, pageData.pagePath)
                 });
 
-                return insertOrReplace(formattedKeywords, 'keywords');
+                return elasticsearch.insert(formattedKeywords, 'keywords');
             } else {
                 winston.info('No keywords! (0) keywords fetched from page \'' + pageData.pagePath + '\'');
                 return null;

@@ -1,4 +1,4 @@
-let searchEs = require('../utils/search-es');
+let elasticsearch = require('../integrations/elasticsearch');
 let winston = require('winston');
 let validator = require('../utils/required-parameter-validator');
 let _ = require('lodash');
@@ -16,7 +16,7 @@ function getClientDataFromDatabase(clientKey) {
         },
     };
 
-    return searchEs(clientKey, 'clients', body)
+    return elasticsearch.query(clientKey, 'clients', body)
         .then((clientData) => {
             if (clientData.length == 0) {
                 throw new Error("No client was found with that key. Check your client key");

@@ -1,7 +1,7 @@
 let validator = require('../utils/required-parameter-validator');
 let clients = require('../mocks/clients.json');
 let _ = require('lodash');
-let esInsert = require('../utils/upsert');
+let elasticsearch = require('../integrations/elasticsearch');
 let winston = require('winston');
 
 module.exports = function (req, res, next) {
@@ -9,7 +9,7 @@ module.exports = function (req, res, next) {
     validator.validateRequiredParameters({clientKey: clientKey});
     var searchedClient = _.find(clients.clients, clientKey)[clientKey];
 
-    return esInsert(searchedClient, 'clients')
+    return elasticsearch.insert(searchedClient, 'clients')
         .then(() => {
             winston.info('Client was successfully saved', searchedClient);
             res.status(200).json({message: "Client was inserted successfully", client: searchedClient});

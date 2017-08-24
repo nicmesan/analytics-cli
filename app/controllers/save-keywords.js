@@ -2,7 +2,7 @@ let Promise = require('bluebird');
 let searchConsole = require('../integrations/google-apis/search-console');
 let winston = require('winston');
 let errors = require('../errors');
-let searchEs = require('../utils/search-es');
+let elasticsearch = require('../integrations/elasticsearch');
 let knex = require('../../config/knex');
 let validator = require('../utils/required-parameter-validator');
 
@@ -14,7 +14,7 @@ function getPagesData(clientKey) {
             }
         }
     };
-    return searchEs(clientKey, 'pages', body)
+    return elasticsearch.query(clientKey, 'pages', body)
 };
 
 module.exports = function (req, res, next) {
