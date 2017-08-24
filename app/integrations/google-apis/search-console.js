@@ -58,7 +58,7 @@ function fetch(domain, options) {
     });
 };
 
-function formatRow(row, clientId, pagePath) {
+function formatRow(row, clientKey, pagePath) {
 
     return {
         keyword: row.keys[0],
@@ -68,7 +68,7 @@ function formatRow(row, clientId, pagePath) {
         position: row.position,
         page: pagePath,
         keywordValue: keywordValue.getKeySetValue(row.position, row.impressions),
-        clientId: clientId
+        clientKey: clientKey
     }
 }
 
@@ -88,7 +88,7 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
                 winston.info(data.rows.length + ' keywords fetched from page \'' + pageData.pagePath + '\'');
 
                 let formattedKeywords = dataToSave.map((row) => {
-                    return formatRow(row, clientData.id, pageData.pagePath)
+                    return formatRow(row, clientData.clientKey, pageData.pagePath)
                 });
 
                 return elasticsearch.insert(clientData.clientKey, 'keywords', formattedKeywords);
