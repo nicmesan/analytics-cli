@@ -1,5 +1,5 @@
 const errors = require('../errors');
-const analytics = require('../lib/analytics');
+const analytics = require('../integrations/analytics');
 const winston = require('winston');
 const knex = require("../../config/knex.js");
 const util = require('util');
