@@ -1,10 +1,9 @@
-let knex = require("../../config/knex.js");
 let winston = require('winston');
 let Promise = require('bluebird');
 let Queue = require('promise-queue');
 let _ = require('lodash');
 let queries = require('../queries/queries');
-let BUSSINESS_CONSTANTS = require('../bussiness_contants')
+let BUSSINESS_CONSTANTS = require('../constants')
 
 function getAndDeleteFirstEquivalenceClass() {
     return knex("product_matches_grouped_unique").select("*").limit(1)

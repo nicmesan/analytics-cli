@@ -1,7 +1,6 @@
 const errors = require('../errors');
 const analytics = require('../integrations/google-apis/analytics');
 const winston = require('winston');
-const knex = require("../../config/knex.js");
 const util = require('util');
 const elasticsearch = require('../integrations/elasticsearch');
 let validator = require('../utils/required-parameter-validator');
@@ -38,7 +37,7 @@ module.exports = function (req, res, next) {
                 return formatPageRow(row, clientKey);
             });
 
-            return elasticsearch.insert(dataToSave, 'pages')
+            return elasticsearch.insert(clientKey, 'pages', dataToSave)
                 .catch(function (error) {
                     throw errors.httpError('Data could not be saved in the DB', error);
                 });

@@ -1,4 +1,4 @@
-let BUSSINESS = require('../bussiness_contants');
+let BUSSINESS = require('../constants');
 
 exports.getKeywordBusinessValue = function (position, impressions) {
     let businessValue;

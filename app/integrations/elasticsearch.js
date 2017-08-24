@@ -7,10 +7,12 @@ let winston = require('winston');
 let Promise = require("bluebird");
 let _ = require('lodash');
 
-module.exports.query = function query(clientId, type, body) {
+module.exports.query = function query(clientKey, type, body, opts) {
+    let opts = opts || {};
+
     return new Promise((resolve, reject) => {
         client.search({
-            index: 'tarantula',
+            index: opts.customIndex ? opts.customIndex : clientKey,
             type: type,
             body: body
         }, function (error, response) {
@@ -28,12 +30,17 @@ module.exports.query = function query(clientId, type, body) {
     });
 };
 
-module.exports.insert = function (data, type) {
-
+module.exports.insert = function(clientKey, type, data, opts) {
+    let opts = opts || {};
     data = _.isArray(data) ? data : [data];
 
     var bulkActions = [];
-    var bulkActionObject = {index: {_index: 'tarantula', _type: type}};
+    var bulkActionObject = {
+        index: {
+        _index: opts.customIndex ? opts.customIndex : clientKey,
+        _type: type
+        }
+    };
 
     _.each(data, (document) => {
         bulkActions.push(bulkActionObject);

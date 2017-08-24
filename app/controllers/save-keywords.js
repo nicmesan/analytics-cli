@@ -3,8 +3,8 @@ let searchConsole = require('../integrations/google-apis/search-console');
 let winston = require('winston');
 let errors = require('../errors');
 let elasticsearch = require('../integrations/elasticsearch');
-let knex = require('../../config/knex');
 let validator = require('../utils/required-parameter-validator');
+let constants = require('../constants');
 
 function getPagesData(clientKey) {
     var body = {
@@ -41,7 +41,7 @@ module.exports = function (req, res, next) {
                     promisesList.push(
                         // Quota: 5 Queries Per Second
                         // Quota: 200 Queries Per Minute
-                        Promise.delay(i/5 * 1500).then(function () {
+                        Promise.delay(i/5 * constants.delayBetweenEachGoogleQueryBatch).then(function () {
                             return searchConsole.saveKeywordsByPage(page, clientData)
                         })
                     );

@@ -91,7 +91,7 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
                     return formatRow(row, clientData.id, pageData.pagePath)
                 });
 
-                return elasticsearch.insert(formattedKeywords, 'keywords');
+                return elasticsearch.insert(clientData.clientKey, 'keywords', formattedKeywords);
             } else {
                 winston.info('No keywords! (0) keywords fetched from page \'' + pageData.pagePath + '\'');
                 return null;
