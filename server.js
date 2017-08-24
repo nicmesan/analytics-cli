@@ -25,6 +25,6 @@ app.use('/google-api/*', setCredentials);
 app.use(Routes);
 app.use(errorHandler);
 
-app.listen(3000, function () {
+app.listen(port, function () {
     winston.info('Server listening on port: ' + port, {});
 });
