@@ -30,7 +30,7 @@ app.use(bodyParser.json({ type: 'application/json' }));
 app.use(cors);
 app.use('/save-client/:clientKey', require('./app/controllers/save-client'));
 app.use(clientContext);
-app.use('/google-api/*/:clientId', setCredentials);
+app.use('/google-api/*', setCredentials);
 
 app.use(Routes);
 app.use(errorHandler);

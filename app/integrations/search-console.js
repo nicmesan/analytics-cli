@@ -59,7 +59,7 @@ exports.fetch = function (domain, options) {
             (error, result) => {
                 if (error) {
                     error.statusCode = Number(error.code) || 500;
-                    console.log('Error searching keywords for page' + options.filters[0].expression, error);
+                    winston.error('Error searching keywords for page ' + options.filters[0].expression, error);
                     return reject(error);
                 }
                 return resolve(result);

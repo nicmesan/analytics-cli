@@ -14,12 +14,13 @@ function getPagesData(clientKey) {
             }
         }
     };
-    return searchEs(clientId, 'pages', body)
+    return searchEs(clientKey, 'pages', body)
 };
 
 module.exports = function (req, res, next) {
 
     let clientData = req.context.clientData;
+    let clientKey = clientData.clientKey;
     let pagesProcessed;
 
     return getPagesData(clientKey).then((pages) => {
@@ -38,7 +39,7 @@ module.exports = function (req, res, next) {
 
                 pagesBatch.forEach(function (page) {
                     promisesList.push(
-                        Promise.delay(i * 1500).then(function () {
+                        Promise.delay(i/5 * 1500).then(function () {
                             return searchConsole.saveKeywordsByPage(page, clientData)
                         })
                     );
