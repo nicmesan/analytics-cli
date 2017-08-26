@@ -67,7 +67,7 @@ function formatRow(row, clientKey, pagePath) {
         ctr: row.ctr,
         position: row.position,
         page: pagePath,
-        keywordValue: keywordValue.getKeySetValue(row.position, row.impressions),
+        keywordValue: keywordValue.getKeywordBusinessValue(row.position, row.impressions),
         clientKey: clientKey
     }
 }

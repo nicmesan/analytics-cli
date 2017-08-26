@@ -1,14 +1,22 @@
 /**
  * Created by javieranselmi on 8/24/17.
  */
-
+let CONSTANTS = require("../constants");
 let client = require('../../config/elasticsearch');
 let winston = require('winston');
 let Promise = require("bluebird");
 let _ = require('lodash');
 
 module.exports.query = function query(clientKey, type, body, opts) {
-    let opts = opts || {};
+    opts = opts || {};
+    let maxSize = CONSTANTS.maxElasticSingleQuerySize;
+    body.size = body.size || maxSize;
+
+    if (body.size > maxSize) {
+        var message = "Trying to query elasticsearch with a single query that was too large. (Max:" + maxSize + ", AttemptedSize:" + opts.size + "). Use batchQuery instead";
+        winston.error(message);
+        return Promise.reject(new Error(message));
+    }
 
     return new Promise((resolve, reject) => {
         client.search({
@@ -31,7 +39,7 @@ module.exports.query = function query(clientKey, type, body, opts) {
 };
 
 module.exports.insert = function(clientKey, type, data, opts) {
-    let opts = opts || {};
+    opts = opts || {};
     data = _.isArray(data) ? data : [data];
 
     var bulkActions = [];

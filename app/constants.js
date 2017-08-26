@@ -6,6 +6,7 @@ module.exports = Object.freeze({
     similarityThreshold: 0.5,
 
     //TECHNICAL
-    delayBetweenEachGoogleQueryBatch: 1500
+    delayBetweenEachGoogleQueryBatch: 1500,
+    maxElasticSingleQuerySize: 500
 });
 
