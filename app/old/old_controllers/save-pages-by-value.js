@@ -20,14 +20,16 @@ exports.saveTopValuePages = function (req, res, next) {
             dataToSave = dataToSave.map(function (row) {
                 return formatPageRow(row, clientId);
             });
-            return insertOrReplace(dataToSave, 'pages', 'pagePath')
+            return insertOrReplace(dataToSave, 'pages')
                 .catch(function (error) {
                     throw errors.httpError('Data could not be saved in the DB', error);
                 });
         })
         .then(function (dataSaved) {
-            winston.info(`${dataSaved[0].affectedRows} were successfully saved/updated in DB`)
-            res.status(200).send({message: dataSaved[0].affectedRows + ' were successfully saved/updated in DB'});
+
+            var message = pageSize + ' pages were successfully saved/updated in DB';
+            winston.info(message);
+            res.status(200).send({message: message});
         })
         .catch(function (err) {
             next(err);

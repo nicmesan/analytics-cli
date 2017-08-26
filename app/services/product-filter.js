@@ -3,7 +3,7 @@ const errors = require('../errors');
 const winston = require('winston');
 const Promise = require('bluebird');
 const _ = require('lodash');
-const BUSINESS = require('../bussiness_contants');
+const BUSINESS = require('../constants');
 const promiseLimit = require('promise-limit')
 
 // -- Stop words filter

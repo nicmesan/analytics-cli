@@ -16,5 +16,5 @@ module.exports = function(clientId) {
 
     return Promise.all(tables.map(function(tableName) {
         return deleteAllRecordsFromTable(tableName, clientId);
-    }))
+    }));
 }

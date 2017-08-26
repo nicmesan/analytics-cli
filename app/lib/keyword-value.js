@@ -1,32 +1,32 @@
-let BUSSINESS = require('../bussiness_contants');
+let BUSSINESS = require('../constants');
 
-exports.getKeySetValue = function (keySetPosition, keySetImpressions) {
-    let keySetValue;
+exports.getKeywordBusinessValue = function (position, impressions) {
+    let businessValue;
     let maxPosition = BUSSINESS.maxPosition || 5;
 
-    if (keySetPosition <= maxPosition) {
-        keySetValue = -1;
+    if (position <= maxPosition) {
+        businessValue = -1;
     }
 
-    else if (keySetPosition <= 10) {
-        keySetValue = 0.1 * keySetImpressions;
+    else if (position <= 10) {
+        businessValue = 0.1 * impressions;
     }
 
-    else if (keySetPosition <= 20) {
-        keySetValue = 100 * keySetImpressions;
+    else if (position <= 20) {
+        businessValue = 100 * impressions;
     }
 
-    else if (keySetPosition <= 30) {
-        keySetValue = 10 * keySetImpressions;
+    else if (position <= 30) {
+        businessValue = 10 * impressions;
     }
 
-    else if (keySetPosition <= 40) {
-        keySetValue = 1 * keySetImpressions;
+    else if (position <= 40) {
+        businessValue = 1 * impressions;
     }
 
     else {
-        keySetValue = 0.1 * keySetImpressions;
+        businessValue = 0.1 * impressions;
     }
 
-    return keySetValue;
+    return businessValue;
 };

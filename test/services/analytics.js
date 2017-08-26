@@ -5,7 +5,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var nock = require('nock');
 var mockery = require('mockery');
-var analytics = require('../../app/integrations/analytics');
+var analytics = require('../../app/integrations/google/analytics');
 var timeUtils = require('../../app/utils/time_formatter');
 
 describe('Analytics', function () {

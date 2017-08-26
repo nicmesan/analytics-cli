@@ -1,0 +1,23 @@
+{
+  "clients": [
+    {
+      "vivisaludable": {
+        "id": 1,
+        "clientKey": "vivisaludable",
+        "name": "Vivi Saludable",
+        "siteName": "vivisaludable.com",
+        "viewId": "ga:89286882",
+        "mainDomain": "vivisaludable.com",
+        "searchDomain": "articulos.vivisaludable.com",
+        "searchUrlPrefix": "?s=",
+        "searchUrlSuffix": null,
+        "strategy": "SEPARATOR",
+        "separator": "+",
+        "tokens": {
+          "googleApiRefreshToken": "1/MXYvK9DLryWcSk-kYCRF-_l2CSwo5ZGUIqaz0P1OYD4",
+          "googleApiAccessToken": "ya29.GlutBPvK0DmQqVOEULAR6mNwzdh3peCu3IynDeUwF63wEEYP1ieRnzwTThD8-lEtNth8w1lZnbH_ya6qne7k4xRhxmh2sYWb3VSGGDWi2DPxp_SKP-SxS_aSreyv"
+        }
+      }
+    }
+  ]
+}

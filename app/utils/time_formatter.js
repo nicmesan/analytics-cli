@@ -10,7 +10,6 @@ function formatDate(date) {
     return [year, month, day].join('-');
 };
 
-
 exports.getPastXDays = function getPastXDays (days) {
     var today = new Date();
     var lastDataAvailable = formatDate(today.setDate(today.getDate() - 2));
