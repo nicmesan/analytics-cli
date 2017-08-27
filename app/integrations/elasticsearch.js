@@ -72,6 +72,7 @@ module.exports.insert = function(clientKey, type, data, opts) {
 module.exports.bulkQuery = function(clientKey, type, bodies, opts) {
     opts = opts || {};
     bodies = _.isArray(bodies) ? bodies : [bodies];
+    let maxSize = CONSTANTS.maxElasticSingleQuerySize;
 
     var bulkActions = [];
     var bulkActionObject = {
@@ -79,6 +80,8 @@ module.exports.bulkQuery = function(clientKey, type, bodies, opts) {
     };
 
     _.each(bodies, (body) => {
+
+        body.size = body.size || maxSize;
         bulkActions.push(bulkActionObject);
         bulkActions.push(body);
     });

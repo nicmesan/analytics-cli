@@ -8,6 +8,7 @@ let errors = require('../../errors');
 let Promise = require("bluebird");
 let keywordValue = require('../../lib/keyword-value');
 let elasticsearch = require('../elasticsearch');
+let articleFinder = require('../../services/article-finder');
 
 //Methods
 
@@ -32,7 +33,7 @@ function fetch(domain, options) {
     return new Promise((resolve, reject) => {
         var o = {
             'auth': auth.oauth2Client,
-            'siteUrl': encodeURIComponent('https://' + domain ),
+            'siteUrl': encodeURIComponent('https://' + domain),
             'fields': 'rows',
             'resource': {
                 'dimensionFilterGroups': [
@@ -83,20 +84,28 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
 
     return fetch(clientData.siteName, options)
         .then(function (data) {
+
             let dataToSave = data.rows;
+            let formattedKeywords = [];
+
             if (dataToSave) {
                 winston.info(data.rows.length + ' keywords fetched from page \'' + pageData.pagePath + '\'');
 
-                let formattedKeywords = dataToSave.map((row) => {
+                formattedKeywords = dataToSave.map((row) => {
                     return formatRow(row, clientData.clientKey, pageData.pagePath)
                 });
-
-                return elasticsearch.insert(clientData.clientKey, 'keywords', formattedKeywords);
             } else {
                 winston.info('No keywords! (0) keywords fetched from page \'' + pageData.pagePath + '\'');
                 return null;
             }
 
+            //Enrich keywords with related articles
+            return articleFinder.getArticlesFromKeywords(formattedKeywords, clientData.clientKey);
+        })
+        .then(function (formattedKeywords) {
+            if (formattedKeywords.length > 0) {
+                return elasticsearch.insert(clientData.clientKey, 'keywords', formattedKeywords);
+            }
         })
         .catch(function (err) {
             winston.info('Error saving page keywords', err);
