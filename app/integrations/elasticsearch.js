@@ -68,3 +68,31 @@ module.exports.insert = function(clientKey, type, data, opts) {
         });
     });
 };
+
+module.exports.bulkQuery = function(clientKey, type, bodies, opts) {
+    opts = opts || {};
+    bodies = _.isArray(bodies) ? bodies : [bodies];
+
+    var bulkActions = [];
+    var bulkActionObject = {
+        index: clientKey
+    };
+
+    _.each(bodies, (body) => {
+        bulkActions.push(bulkActionObject);
+        bulkActions.push(body);
+    });
+
+    return new Promise((resolve, reject) => {
+        client.msearch({
+            body: bulkActions
+        }, function (err, resp) {
+            if (err) {
+                winston.error('Error multi-searching documents in type \''+ type +'\' in elasticsearch', err);
+                reject(err);
+            };
+            winston.info('Gathered ' + bodies.length + ' documents into type \''+ type +'\' in elasticsearch');
+            resolve(resp);
+        });
+    });
+};
