@@ -8,7 +8,7 @@ let errors = require('../../errors');
 let Promise = require("bluebird");
 let keywordValue = require('../../lib/keyword-value');
 let elasticsearch = require('../elasticsearch');
-let articleFinder = require('../../services/article-finder');
+let productFinder = require('../../services/product-finder');
 
 //Methods
 
@@ -99,8 +99,8 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
                 return null;
             }
 
-            //Enrich keywords with related articles
-            return articleFinder.getArticlesFromKeywords(formattedKeywords, clientData.clientKey);
+            //Enrich keywords with related products
+            return productFinder.getProductsFromKeywords(formattedKeywords, clientData.clientKey);
         })
         .then(function (formattedKeywords) {
             if (formattedKeywords.length > 0) {

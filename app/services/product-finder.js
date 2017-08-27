@@ -11,8 +11,8 @@ let constants = require('../constants');
 
 function formatForSearch(keyword) {
     return {
-        _source: false,
-        min_score: constants.minimumScoreForArticleMatching,
+        _source: ["title","imageUrl","uri"],
+        min_score: constants.minimumScoreForProductMatching,
         query: {
             match: {
                 description: keyword.keyword
@@ -21,21 +21,27 @@ function formatForSearch(keyword) {
     }
 }
 
-exports.getArticlesFromKeywords = function (keywords, clientKey) {
+exports.getProductsFromKeywords = function (keywords, clientKey) {
     var bodies = _.map(keywords, (keyword) => {
         return formatForSearch(keyword);
     });
     return elasticsearch.bulkQuery(clientKey, 'products', bodies).then((results) => {
         _.each(results.responses, (response, index) => {
-            let relatedArticleIds = _.map(response.hits.hits, (hit) => {
-                return hit["_id"];
+            let relatedProductIds = _.map(response.hits.hits, (hit) => {
+                return {
+                    productId: hit["_id"],
+                    score: hit["_score"],
+                    title: hit["_source"].title,
+                    imageUrl: hit["_source"].imageUrl,
+                    url: hit["_source"].uri
+                };
             });
-            keywords[index].relatedArticles = relatedArticleIds;
+            keywords[index].relatedProducts = relatedProductIds;
 
         });
 
         let filteredKeywords = _.filter(keywords, (keyword) => {
-            return keyword.relatedArticles.length >= constants.minimumAmountOfArticlesMatched;
+            return keyword.relatedProducts.length >= constants.minimumAmountOfProductsMatched;
         });
 
         return filteredKeywords;
