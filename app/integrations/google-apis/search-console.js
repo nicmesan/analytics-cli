@@ -98,9 +98,7 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
                 winston.info('No keywords! (0) keywords fetched from page \'' + pageData.pagePath + '\'');
                 return null;
             }
-
-            //Enrich keywords with related products
-            return productFinder.getProductsFromKeywords(formattedKeywords, clientData.clientKey);
+            return formattedKeywords;
         })
         .then(function (formattedKeywords) {
             if (formattedKeywords.length > 0) {
