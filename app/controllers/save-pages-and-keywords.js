@@ -20,7 +20,7 @@ module.exports = function (req, res, next) {
         })
         .then(()=>{
             //Waiting some time for pages to be available for querying in ES
-            return Promise.delay(4000);
+            return Promise.delay(10000);
         })
         .then(() => {
             return savekeywordsService(clientData);
