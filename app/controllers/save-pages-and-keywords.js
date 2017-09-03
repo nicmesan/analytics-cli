@@ -2,6 +2,7 @@ const winston = require('winston');
 let savePagesService = require('../services/save-pages');
 let savekeywordsService = require('../services/save-keywords');
 let validator = require('../utils/required-parameter-validator');
+let Promise = require('bluebird');
 
 module.exports = function (req, res, next) {
 
@@ -16,6 +17,10 @@ module.exports = function (req, res, next) {
     return savePagesService(pageSize, orderBy, clientData)
         .catch(function (err) {
             next(err);
+        })
+        .then(()=>{
+            //Waiting some time for pages to be available for querying in ES
+            return Promise.delay(4000);
         })
         .then(() => {
             return savekeywordsService(clientData);

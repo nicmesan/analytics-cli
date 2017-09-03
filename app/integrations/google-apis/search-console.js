@@ -108,7 +108,7 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
                         siteName: clientData.siteName,
                         client: clientData.clientKey,
                     });
-                return null;
+                return [];
             }
             return formattedKeywords;
         })
