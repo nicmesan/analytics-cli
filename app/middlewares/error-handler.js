@@ -1,7 +1,7 @@
 var winston = require('winston');
 
 module.exports = function errorHandler(err, req, res, next) {
-    winston.info(err);
+    winston.error('analytics-cli error', err);
 
     var errorToSend = {
         errorMessage: err.message,
@@ -17,5 +17,5 @@ module.exports = function errorHandler(err, req, res, next) {
         })
     }
 
-    res.status(400).json(errorToSend);
+    res.status(500).json(errorToSend);
 };

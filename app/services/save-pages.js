@@ -14,16 +14,10 @@ function formatPageRow(row, clientKey) {
     }
 }
 
-module.exports = function (req, res, next) {
+module.exports = function (pageSize, orderBy, clientData) {
 
-    let pageSize = req.body.pageSize;
-    let orderBy = req.body.orderBy;
-    let viewId = req.context.clientData.viewId;
-    let clientKey = req.context.clientData.clientKey;
-
-    validator.validateRequiredParameters({
-        pageSize: pageSize,
-    });
+    let viewId = clientData.viewId;
+    let clientKey = clientData.clientKey;
 
     return analytics.getPages(pageSize, viewId, orderBy)
         .then(function (data) {
@@ -43,12 +37,12 @@ module.exports = function (req, res, next) {
                 });
         })
         .then(function () {
-
             var message = pageSize + ' pages were successfully saved/updated in DB';
-            winston.info(message);
-            res.status(200).send({message: message});
-        })
-        .catch(function (err) {
-            next(err);
+            winston.info(message, {
+                amount: pageSize,
+                origin: 'analytics-cli.services.save-pages',
+                siteName: clientData.siteName,
+                client: clientData.clientKey
+            });
         })
 };

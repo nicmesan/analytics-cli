@@ -89,13 +89,25 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
             let formattedKeywords = [];
 
             if (dataToSave) {
-                winston.info(data.rows.length + ' keywords fetched from page \'' + pageData.pagePath + '\'');
+                winston.info(data.rows.length + ' keywords fetched from page \'' + pageData.pagePath + '\'', {
+                    page: pageData.pagePath,
+                    origin: 'analytics-cli.integrations.google-apis.search-console.fetch',
+                    siteName: clientData.siteName,
+                    client: clientData.clientKey,
+                    amount: data.rows.length
+                });
 
                 formattedKeywords = dataToSave.map((row) => {
                     return formatRow(row, clientData.clientKey, pageData.pagePath)
                 });
             } else {
-                winston.info('No keywords! (0) keywords fetched from page \'' + pageData.pagePath + '\'');
+                winston.info('No keywords! (0) keywords fetched from page \'' + pageData.pagePath + '\'',
+                    {
+                        page: pageData.pagePath,
+                        origin: 'analytics-cli.integrations.google-apis.search-console.fetch',
+                        siteName: clientData.siteName,
+                        client: clientData.clientKey,
+                    });
                 return null;
             }
             return formattedKeywords;
@@ -106,7 +118,7 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
             }
         })
         .catch(function (err) {
-            winston.info('Error saving page keywords', err);
+            winston.error('Error saving page keywords', err);
             throw new errors.keywordSaveError('Save keywords error', err)
         })
 };

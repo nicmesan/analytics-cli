@@ -78,7 +78,10 @@ function fetch(viewId, options) {
                 });
             } else {
                 resolve(resp);
-                winston.info(resp.reports[0].data.rows.length + ' pages were gathered from Analytics');
+                winston.info(resp.reports[0].data.rows.length + ' pages were gathered from Analytics', {
+                    origin: "analytics-cli.integrations.analytics.get-pages",
+                    entity: 'pages'
+                });
             }
         })
     })

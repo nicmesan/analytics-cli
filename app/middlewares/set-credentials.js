@@ -7,7 +7,10 @@ var setCredentials = function (req, res, next) {
 
     oauth.setExistingCredentials(refreshToken)
         .then(function () {
-            winston.info('Client credentials were set');
+            winston.info('Client credentials were set',{
+                clientKey: req.context.clientData.clientKey,
+                origin: "anaytics-cli.middlewares.set-credentials"
+            });
             next()
         }).catch((err) => {
         next(err);

@@ -63,7 +63,14 @@ module.exports.insert = function(clientKey, type, data, opts) {
                 winston.error('Error inserting documents into type \''+ type +'\' in elasticsearch', err);
                 reject(err);
             };
-            winston.info('Inserted ' + data.length + ' documents into type \''+ type +'\' in elasticsearch');
+            winston.info('Inserted ' + data.length + ' documents into type \''+ type +'\' in elasticsearch', {
+                entity: type,
+                origin: 'analytics-cli.integrations.elasticsearch.insert',
+                index: opts.customIndex ? opts.customIndex : clientKey,
+                client: clientKey,
+                type: type,
+                documents: data.length
+            });
             resolve(data.length);
         });
     });
@@ -94,7 +101,14 @@ module.exports.bulkQuery = function(clientKey, type, bodies, opts) {
                 winston.error('Error multi-searching documents in type \''+ type +'\' in elasticsearch', err);
                 reject(err);
             };
-            winston.info('Gathered ' + bodies.length + ' documents into type \''+ type +'\' in elasticsearch');
+            winston.info('Gathered ' + bodies.length + ' documents into type \''+ type +'\' in elasticsearch', {
+                entity: type,
+                origin: 'analytics-cli.integrations.elasticsearch.bulkQuery',
+                index: clientKey,
+                client: clientKey,
+                type: type,
+                documents: bodies.length
+            });
             resolve(resp);
         });
     });

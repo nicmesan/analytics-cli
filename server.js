@@ -16,6 +16,12 @@ let Routes = require('./app/routes');
 const port = process.env.PORT || 3000;
 const app = express();
 
+winston.configure({
+    transports: [
+        new (winston.transports.Console)({ json: true })
+    ]
+});
+
 app.use(requestLogger);
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(cors);

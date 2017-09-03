@@ -46,7 +46,10 @@ function getClientData(req, res, next) {
         if (!clientData) {
             throw new Error("Client data was not found locally");
         } else {
-            winston.info("Client data was found locally and added to context");
+            winston.info("Client data was found locally and added to context", {
+                clientKey: clientKey,
+                origin: "anaytics-cli.middlewares.client-context"
+            });
             req.context = req.context || {};
             req.context.clientData = clientData[clientKey];
             next();

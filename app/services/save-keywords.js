@@ -17,20 +17,18 @@ function getPagesData(clientKey) {
     return elasticsearch.query(clientKey, 'pages', body)
 };
 
-module.exports = function (req, res, next) {
+module.exports = function (clientData) {
 
-    let clientData = req.context.clientData;
     let clientKey = clientData.clientKey;
     let pagesProcessed;
 
     return getPagesData(clientKey).then((pages) => {
 
         if (pages.length < 1) {
-            res.status(500).json({message: "No pages associated with this client ID"})
+            throw new errors.httpError("No pages associated with this client ID");
         }
 
         else {
-
             pagesProcessed = pages;
             let promisesList = [];
             for (let i = 0; i < pages.length; i += 5) {
@@ -41,7 +39,7 @@ module.exports = function (req, res, next) {
                     promisesList.push(
                         // Quota: 5 Queries Per Second
                         // Quota: 200 Queries Per Minute
-                        Promise.delay(i/5 * constants.delayBetweenEachGoogleQueryBatch).then(function () {
+                        Promise.delay(i / 5 * constants.delayBetweenEachGoogleQueryBatch).then(function () {
                             return searchConsole.saveKeywordsByPage(page, clientData)
                         })
                     );
@@ -51,6 +49,7 @@ module.exports = function (req, res, next) {
             return Promise.all(promisesList.map((promise) => {
                 return promise.reflect();
             }))
+
                 .then((result) => {
 
                     let rejectedPromises = [];
@@ -62,23 +61,12 @@ module.exports = function (req, res, next) {
 
                     });
 
-                    if (rejectedPromises.length < 1) {
-                        winston.info("Keywords correctly saved");
-                        res.status(200).json({message: "Keywords were correctly saved"})
-                    }
+                    return rejectedPromises;
 
-                    else {
-                        winston.info(`Keywords saved, ${rejectedPromises.length} pages couldn't be saved. Pages with errors: `, rejectedPromises);
-                        res.status(200).json({
-                            message: `Keywords saved, ${rejectedPromises.length} pages couldn't be saved`,
-                            failedPages: rejectedPromises
-                        })
-                    }
-                })
+                });
+
         }
-    })
-        .catch(function (err) {
-            winston.error('Keywords could not be saved', err);
-            next(err)
-        })
+
+    });
+
 };
