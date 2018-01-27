@@ -9,12 +9,13 @@ module.exports = function (req, res, next) {
     let pageSize = req.body.pageSize;
     let orderBy = req.body.orderBy;
     let clientData = req.context.clientData;
+    let runId = req.context.runId;
 
     validator.validateRequiredParameters({
         pageSize: pageSize,
     });
 
-    return savePagesService(pageSize, orderBy, clientData)
+    return savePagesService(pageSize, orderBy, clientData, runId)
         .catch(function (err) {
             next(err);
         })
@@ -23,7 +24,7 @@ module.exports = function (req, res, next) {
             return Promise.delay(10000);
         })
         .then(() => {
-            return savekeywordsService(clientData);
+            return savekeywordsService(clientData, runId);
         })
         .then((rejectedPromises) => {
             if (rejectedPromises.length < 1) {

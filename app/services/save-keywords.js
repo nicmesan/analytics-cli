@@ -17,7 +17,7 @@ function getPagesData(clientKey) {
     return elasticsearch.query(clientKey, 'pages', body)
 };
 
-module.exports = function (clientData) {
+module.exports = function (clientData, runId) {
 
     let clientKey = clientData.clientKey;
     let pagesProcessed;
@@ -40,7 +40,7 @@ module.exports = function (clientData) {
                         // Quota: 5 Queries Per Second
                         // Quota: 200 Queries Per Minute
                         Promise.delay(i / 5 * constants.delayBetweenEachGoogleQueryBatch).then(function () {
-                            return searchConsole.saveKeywordsByPage(page, clientData)
+                            return searchConsole.saveKeywordsByPage(page, clientData, runId)
                         })
                     );
                 });

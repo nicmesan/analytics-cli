@@ -5,16 +5,17 @@ const util = require('util');
 const elasticsearch = require('../integrations/elasticsearch');
 let validator = require('../utils/required-parameter-validator');
 
-function formatPageRow(row, clientKey) {
+function formatPageRow(row, clientKey, runId) {
     return {
         pageValue: row.metrics[0].values[0],
         pagePath: row.dimensions[0],
         sessions: row.metrics[0].values[1],
-        clientKey: clientKey
+        clientKey: clientKey,
+        runId: runId
     }
 }
 
-module.exports = function (pageSize, orderBy, clientData) {
+module.exports = function (pageSize, orderBy, clientData, runId) {
 
     let viewId = clientData.viewId;
     let clientKey = clientData.clientKey;
@@ -28,11 +29,19 @@ module.exports = function (pageSize, orderBy, clientData) {
             }
 
             dataToSave = dataToSave.map(function (row) {
-                return formatPageRow(row, clientKey);
+                return formatPageRow(row, clientKey, runId);
             });
 
             return elasticsearch.insert(clientKey, 'pages', dataToSave)
                 .catch(function (error) {
+                    winston.error(error, {
+                        amount: pageSize,
+                        origin: 'analytics-cli.services.save-pages',
+                        siteName: clientData.siteName,
+                        client: clientData.clientKey,
+                        runId: runId,
+                        error: error
+                    });
                     throw errors.httpError('Data could not be saved in the DB', error);
                 });
         })
@@ -42,7 +51,8 @@ module.exports = function (pageSize, orderBy, clientData) {
                 amount: pageSize,
                 origin: 'analytics-cli.services.save-pages',
                 siteName: clientData.siteName,
-                client: clientData.clientKey
+                client: clientData.clientKey,
+                runId: runId
             });
         })
 };

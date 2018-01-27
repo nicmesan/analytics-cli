@@ -59,7 +59,7 @@ function fetch(domain, options) {
     });
 };
 
-function formatRow(row, clientKey, pagePath) {
+function formatRow(row, clientKey, pagePath, runId) {
 
     return {
         keyword: row.keys[0],
@@ -69,11 +69,12 @@ function formatRow(row, clientKey, pagePath) {
         position: row.position,
         page: pagePath,
         keywordValue: keywordValue.getKeywordBusinessValue(row.position, row.impressions),
-        clientKey: clientKey
+        clientKey: clientKey,
+        runId: runId
     }
 }
 
-exports.saveKeywordsByPage = function (pageData, clientData) {
+exports.saveKeywordsByPage = function (pageData, clientData, runId) {
 
     let fullUrl = 'https://' + pageData.pagePath;
     let options = {
@@ -94,11 +95,12 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
                     origin: 'analytics-cli.integrations.google-apis.search-console.fetch',
                     siteName: clientData.siteName,
                     client: clientData.clientKey,
-                    amount: data.rows.length
+                    amount: data.rows.length,
+                    runId: runId
                 });
 
                 formattedKeywords = dataToSave.map((row) => {
-                    return formatRow(row, clientData.clientKey, pageData.pagePath)
+                    return formatRow(row, clientData.clientKey, pageData.pagePath, runId)
                 });
             } else {
                 winston.info('No keywords! (0) keywords fetched from page \'' + pageData.pagePath + '\'',
@@ -107,6 +109,7 @@ exports.saveKeywordsByPage = function (pageData, clientData) {
                         origin: 'analytics-cli.integrations.google-apis.search-console.fetch',
                         siteName: clientData.siteName,
                         client: clientData.clientKey,
+                        runId: runId
                     });
                 return [];
             }
