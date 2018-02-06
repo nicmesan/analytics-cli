@@ -69,6 +69,7 @@ function formatRow(row, clientKey, pagePath, runId) {
         position: row.position,
         page: pagePath,
         keywordValue: keywordValue.getKeywordBusinessValue(row.position, row.impressions),
+        keywordLiteral: row.keys[0],
         clientKey: clientKey,
         runId: runId
     }
