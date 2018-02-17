@@ -1,5 +1,6 @@
-init:
-	docker-compose up -d db
+export ROOT_DIR=${PWD}
 
 run:
-	docker-compose up analytics-cli
+	docker-compose --file docker-compose-prod.yml up -d logstash
+	sleep 40
+	docker-compose --file docker-compose-prod.yml up -d analytics-cli

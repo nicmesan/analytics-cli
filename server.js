@@ -13,14 +13,19 @@ let setCredentials = require('./app/middlewares/set-credentials');
 let clientContext = require('./app/middlewares/client-context');
 let Routes = require('./app/routes');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 const app = express();
 
 winston.configure({
     transports: [
-        new (winston.transports.Console)({ json: true })
-    ]
+      new winston.transports.File({
+        json: true,
+        filename:'/dev/stdout'
+      })
+    ],
+    exitOnError: false
 });
+
 
 app.use(requestLogger);
 app.use(bodyParser.json({ type: 'application/json' }));

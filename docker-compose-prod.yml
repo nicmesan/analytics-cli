@@ -1,0 +1,21 @@
+logstash:
+  image: pabloncio/logstash
+  net: "host"
+  environment:
+    APP: analitics-cli
+    ES_ENDPOINT: https://search-tarantula-f3mxx6bnfmiwjumonropmqtebu.us-east-1.es.amazonaws.com:443
+
+analitics-cli:
+  image: pabloncio/analitics-cli
+  command: node index.js
+  depends_on:
+      - "logstash"
+  ports:
+    - "8081:8081"
+  log_driver: syslog
+  log_opt:
+    syslog-format: "rfc3164"
+    syslog-address: "tcp://localhost:5000"
+
+
+
