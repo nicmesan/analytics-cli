@@ -7,7 +7,7 @@ logstash:
 
 analytics-cli:
   image: pabloncio/analytics-cli
-  command: node index.js
+  command: node server.js
   ports:
     - "8081:8081"
   log_driver: syslog
